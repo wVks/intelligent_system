@@ -1,0 +1,4 @@
+interface:
+  display_name: "StudyNavigator: разработка"
+  short_description: "MVP, чат, AI-ответы и исправление ошибок"
+  default_prompt: "Используй $study-build, чтобы реализовать следующий работающий сценарий StudyNavigator и проверить его."

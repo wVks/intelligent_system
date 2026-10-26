@@ -1,0 +1,4 @@
+Команда: PYTHONDONTWRITEBYTECODE=1 python3 check_fixtures.py
+Exit code: 0
+Шесть guard-примеров выполнены успешно (wrong citation, fabricated date, injection source, supported fact, unknown question без утверждений и с выдуманным паролем).
+Проверены только локальные guards на заранее размеченной структуре. Это не ответы приложения и не процент качества системы; MCP/LLM/hosted не запускались.

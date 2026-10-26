@@ -1,0 +1,12 @@
+{
+  "provenance": "Сведения из prompt; собственные проверки сервиса не выполнялись",
+  "offline_mock_tests": "reported_pass",
+  "direct_tool_function_tests": "reported_pass",
+  "public_health": "reported_pass",
+  "real_mcp_transport": "not_checked",
+  "live_chat": "not_checked",
+  "sqlite_persistence": "reported_fail",
+  "eval_live": null,
+  "release_ready": false,
+  "runs": []
+}

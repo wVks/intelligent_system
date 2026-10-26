@@ -1,0 +1,18 @@
+[
+  {
+    "name": "study-build",
+    "frontmatter": "name: study-build\ndescription: \"Разрабатывай StudyNavigator: функции MVP, веб-чат, AI-ответы с источниками, план подготовки и исправления багов. Применяй при реализации или изменении приложения; для отдельного MCP-контракта используй study-mcp, для измерения качества — study-eval, для сдачи — study-release.\""
+  },
+  {
+    "name": "study-eval",
+    "frontmatter": "name: study-eval\ndescription: \"Проверяй StudyNavigator: Eval качества AI-ответов, подтверждение источниками, неизвестные сроки, планы, tool traces и регрессии после изменений. Применяй при подготовке тестового набора или сравнении версий; отдельную реализацию MCP ведёт study-mcp, сдачу — study-release.\""
+  },
+  {
+    "name": "study-mcp",
+    "frontmatter": "name: study-mcp\ndescription: Реализовать или исправить MCP-сервер, MCP-клиент, контракты инструментов и цикл вызовов LLM в StudyNavigator. Использовать для MCP-интеграции и её тестов; обычная правка интерфейса не требует этого skill."
+  },
+  {
+    "name": "study-release",
+    "frontmatter": "name: study-release\ndescription: \"Подготовить StudyNavigator к развёртыванию и сдаче: проверить хостинг, воспроизводимый запуск, README, результаты Eval и интерактивную HTML-защиту по учебному PDF. Применять при запросе публикации, готовности к сдаче или подготовки защиты; обычная реализация функции относится к study-build.\""
+  }
+]

@@ -1,0 +1,44 @@
+{
+  "expectations": [
+    {
+      "text": "Знаменатель равен 30 и доля успеха 80%",
+      "passed": true,
+      "evidence": "response.md: 24/30=80%, 6/30=20%; знаменатель — все30 запланированных случаев."
+    },
+    {
+      "text": "Timeout и пропуски считаются неудачами",
+      "passed": true,
+      "evidence": "response.md явно включает четыре timeout и два неответа как неудачи; при повторении на каждый ID нужна запись, неответы не удаляются."
+    },
+    {
+      "text": "Fake прогон помечен offline",
+      "passed": true,
+      "evidence": "Режим прямо назван offline с fake provider; результат не приписывается реальной модели, MCP или хостингу. Уточняется, что без семантических evidence это может быть лишь доля завершений."
+    },
+    {
+      "text": "Для live нужны отдельные реальные прогоны",
+      "passed": true,
+      "evidence": "response.md требует отдельные результаты настоящего MCP, live LLM и hosted smoke, не заменяя их fake. Новый прогон не заявлен, выполнен лишь расчёт данных запроса."
+    }
+  ],
+  "summary": {
+    "passed": 4,
+    "failed": 0,
+    "total": 4,
+    "pass_rate": 1.0
+  },
+  "claims": [],
+  "eval_feedback": {
+    "suggestions": [
+      {
+        "reason": "Ожидания не проверяют запрошенный способ повторения. Добавить полный фиксированный манифест30 ID/config/fixtures и запись timeout/missing, которую нельзя удалить из знаменателя."
+      }
+    ],
+    "overall": "Независимая оценка фактических v2 response/transcript/артефактов по тем же стандартам, что v1. Current skills не читались. Наличие skill не даёт балл; проектирование не обязано доказывать ещё не выполненные сетевые/live проверки."
+  },
+  "timing": {
+    "total_tokens": null,
+    "duration_ms": null,
+    "note": "The collaboration API did not expose per-agent token/duration metrics."
+  }
+}

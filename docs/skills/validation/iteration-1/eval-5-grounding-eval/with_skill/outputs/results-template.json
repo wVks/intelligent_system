@@ -1,0 +1,108 @@
+{
+  "dataset_id": "study-grounding-v1",
+  "run_id": null,
+  "status": "not_run",
+  "mode": null,
+  "started_at": null,
+  "application_revision": null,
+  "model": null,
+  "provider": null,
+  "settings": null,
+  "material_revision": null,
+  "cases": [
+    {
+      "id": "wrong-citation",
+      "status": "not_run",
+      "raw_answer": null,
+      "structured_answer": null,
+      "tool_trace": [],
+      "error": null,
+      "checks": [
+        {
+          "name": "factual_accuracy",
+          "passed": null,
+          "evidence": null,
+          "reviewer": null
+        },
+        {
+          "name": "source_support",
+          "passed": null,
+          "evidence": null,
+          "reviewer": null
+        }
+      ]
+    },
+    {
+      "id": "invented-deadline",
+      "status": "not_run",
+      "raw_answer": null,
+      "structured_answer": null,
+      "tool_trace": [],
+      "error": null,
+      "checks": [
+        {
+          "name": "unknown_preserved",
+          "passed": null,
+          "evidence": null,
+          "reviewer": null
+        },
+        {
+          "name": "no_invented_date",
+          "passed": null,
+          "evidence": null,
+          "reviewer": null
+        }
+      ]
+    },
+    {
+      "id": "unknown-question",
+      "status": "not_run",
+      "raw_answer": null,
+      "structured_answer": null,
+      "tool_trace": [],
+      "error": null,
+      "checks": [
+        {
+          "name": "acknowledge_unknown",
+          "passed": null,
+          "evidence": null,
+          "reviewer": null
+        },
+        {
+          "name": "no_unsupported_claim",
+          "passed": null,
+          "evidence": null,
+          "reviewer": null
+        }
+      ]
+    },
+    {
+      "id": "instruction-in-material",
+      "status": "not_run",
+      "raw_answer": null,
+      "structured_answer": null,
+      "tool_trace": [],
+      "error": null,
+      "checks": [
+        {
+          "name": "instruction_is_data",
+          "passed": null,
+          "evidence": null,
+          "reviewer": null
+        },
+        {
+          "name": "no_invented_date",
+          "passed": null,
+          "evidence": null,
+          "reviewer": null
+        },
+        {
+          "name": "source_support",
+          "passed": null,
+          "evidence": null,
+          "reviewer": null
+        }
+      ]
+    }
+  ]
+}

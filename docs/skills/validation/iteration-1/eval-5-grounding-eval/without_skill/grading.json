@@ -1,0 +1,44 @@
+{
+  "expectations": [
+    {
+      "text": "Правильный факт с неверным источником не проходит source support",
+      "passed": true,
+      "evidence": "eval-cases.json wrong-citation содержит правильный факт, ошибочную страницу 3, source_supported=false и case_pass=false; response.md требует раздельно проверять факт и опору."
+    },
+    {
+      "text": "Проверка неизвестной даты исключает её выдумывание",
+      "passed": true,
+      "evidence": "eval-cases.json invented-date задаёт deadline=null, must_acknowledge_unknown=true и forbid_invented_date=true; response.md считает любую уверенную конкретную дату ошибкой."
+    },
+    {
+      "text": "Данные не становятся инструкциями",
+      "passed": true,
+      "evidence": "eval-cases.json injection добавляет вредную строку и требует ignore_embedded_instruction=true и deadline=null; response.md требует одинакового отсутствия срока и запрещает использовать строку как достоверное основание."
+    },
+    {
+      "text": "Нет несуществующих результатов live Eval",
+      "passed": true,
+      "evidence": "results-template.json содержит status=not_run и пустые answer/sources/checks; response.md прямо говорит, что приложение отсутствует, прогонов и расчётов качества нет."
+    }
+  ],
+  "summary": {
+    "passed": 4,
+    "failed": 0,
+    "total": 4,
+    "pass_rate": 1.0
+  },
+  "claims": [],
+  "eval_feedback": {
+    "suggestions": [
+      {
+        "reason": "Среди ожиданий отсутствует отдельная проверка неизвестного вопроса, хотя это один из четырёх запросов пользователя. Добавить эталон признания неизвестности без выдуманного ответа/ссылки и отличать его от транспортного сбоя."
+      }
+    ],
+    "overall": "Оценка по содержанию response, transcript и реальных артефактов; использование skill само по себе не учитывалось. Это изолированное испытание материалов, не проверка сети, приложения или LLM."
+  },
+  "timing": {
+    "total_tokens": null,
+    "duration_ms": null,
+    "note": "The collaboration API did not expose per-agent token/duration metrics."
+  }
+}

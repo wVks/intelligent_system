@@ -1,0 +1,5 @@
+{
+  "total_tokens": null,
+  "duration_ms": null,
+  "note": "The collaboration API did not expose per-agent token/duration metrics."
+}

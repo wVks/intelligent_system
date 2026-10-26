@@ -1,0 +1,47 @@
+{
+  "expectations": [
+    {
+      "text": "План 5 часов при доступных 2 не помечается выполнимым",
+      "passed": true,
+      "evidence": "test-case.json: available_minutes120, задачи180+120, expected feasible=false/reason insufficient_time/required300/deficit180; response.md запрещает молча менять исходные длительности."
+    },
+    {
+      "text": "Проверка суммы/бюджета выполняется кодом, допускает разные тексты объяснения",
+      "passed": true,
+      "evidence": "response.md поручает валидатору вычислить300 минут и сравнить с120; разрешает существующий эквивалент причины и разные тексты объяснения, требуя семантического отрицательного исхода."
+    },
+    {
+      "text": "Объём ограничен одной регрессией и связанными проверками без полного релиза",
+      "passed": true,
+      "evidence": "Предложен один изолированный plan-budget-2h-vs-5h и подключение его к реальному валидатору после предоставления кода; модель/MCP/полный Eval/релиз для этого не нужны."
+    },
+    {
+      "text": "Отсутствующий прогон не выдан за выполненный",
+      "passed": true,
+      "evidence": "test-case.json status=fixture_only_not_validator_run; response.md ограничивает локальную проверку арифметикой300/180 и говорит, что валидатор не предоставлен/не запускался."
+    }
+  ],
+  "summary": {
+    "passed": 4,
+    "failed": 0,
+    "total": 4,
+    "pass_rate": 1.0
+  },
+  "claims": [
+    {
+      "claim": "План требует300 минут при бюджете120 и дефиците180",
+      "type": "factual",
+      "verified": true,
+      "evidence": "Независимая арифметическая проверка grader: sum([180,120])=300, 300-120=180. Это не запуск валидатора приложения."
+    }
+  ],
+  "eval_feedback": {
+    "suggestions": [],
+    "overall": "Независимая оценка фактических v2 response/transcript/артефактов по тем же стандартам, что v1. Current skills не читались. Наличие skill не даёт балл; проектирование не обязано доказывать ещё не выполненные сетевые/live проверки."
+  },
+  "timing": {
+    "total_tokens": null,
+    "duration_ms": null,
+    "note": "The collaboration API did not expose per-agent token/duration metrics."
+  }
+}

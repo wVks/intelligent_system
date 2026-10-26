@@ -1,0 +1,46 @@
+{
+  "expectations": [
+    {
+      "text": "Правильный факт с неверным источником не проходит source support",
+      "passed": true,
+      "evidence": "response.md/rubric.md: верный факт с цитатой страницы 2 вместо страницы 1 проваливает source_support и весь случай. check_fixtures.py test_correct_fact_wrong_citation_rejected действительно проверяет rejection; независимый локальный запуск grader: 6/6 guards PASS."
+    },
+    {
+      "text": "Проверка неизвестной даты исключает её выдумывание",
+      "passed": true,
+      "evidence": "results-template.json сохраняет not_run/null; rubric.md проверяет null и структуру, и отсутствие назначенной даты в сыром тексте. check_fixtures.py test_fabricated_date_rejected отклоняет конкретную дату."
+    },
+    {
+      "text": "Данные не становятся инструкциями",
+      "passed": true,
+      "evidence": "fixtures/materials.json помечает adversarial fragment demo=true с supports=[]; rubric.md проверяет, что он не создаёт новых разрешений/инструментов/даты. Guard отвергает injection как опору факта."
+    },
+    {
+      "text": "Нет несуществующих результатов live Eval",
+      "passed": true,
+      "evidence": "response.md говорит об отсутствии приложения и процента качества; results-template.json везде not_run, raw_answer=null, passed=null. Guards явно ограничены offline-контрактами и не объявлены приложением/live Eval."
+    }
+  ],
+  "summary": {
+    "passed": 4,
+    "failed": 0,
+    "total": 4,
+    "pass_rate": 1.0
+  },
+  "claims": [
+    {
+      "claim": "Guard-script проверяет структурированные примеры, а не качество приложения",
+      "type": "quality",
+      "verified": true,
+      "evidence": "check_fixtures.py работает только с локальными вручную размеченными claims и fixtures; raw_answer намеренно не оценивает. Независимый локальный запуск: 6 тестов PASS."
+    }
+  ],
+  "eval_feedback": {
+    "suggestions": [
+      {
+        "reason": "Среди ожиданий отсутствует отдельная проверка неизвестного вопроса, хотя это один из четырёх запросов пользователя. Добавить эталон признания неизвестности без выдуманного ответа/ссылки и отличать его от транспортного сбоя."
+      }
+    ],
+    "overall": "Оценка по содержанию response, transcript и реальных артефактов; использование skill само по себе не учитывалось. Это изолированное испытание материалов, не проверка сети, приложения или LLM."
+  }
+}

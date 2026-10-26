@@ -1,0 +1,28 @@
+{
+  "id": "plan-budget-2h-vs-5h",
+  "status": "fixture_only_not_validator_run",
+  "input": {
+    "horizon_id": "single-budget-window",
+    "available_minutes": 120,
+    "due_date": null,
+    "due_at": null,
+    "tasks": [
+      {
+        "id": "a",
+        "duration_minutes": 180
+      },
+      {
+        "id": "b",
+        "duration_minutes": 120
+      }
+    ]
+  },
+  "assertions": {
+    "feasible": false,
+    "reason": "insufficient_time_or_existing_equivalent",
+    "required_minutes": 300,
+    "deficit_minutes": 180,
+    "original_durations_preserved": true
+  },
+  "scope": "Only arithmetic consistency was checked locally. Application validator was not supplied or executed."
+}

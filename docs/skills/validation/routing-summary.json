@@ -1,0 +1,7 @@
+{
+  "source": "routing-v1.json",
+  "kind": "blind primary-skill selection from descriptions, not product auto-invocation",
+  "total": 20,
+  "passed": 20,
+  "trials_per_query": 1
+}

@@ -1,0 +1,47 @@
+{
+  "expectations": [
+    {
+      "text": "В ответе две ссылки для LMS: репозиторий с README/HTML и сервис",
+      "passed": true,
+      "evidence": "response.md даёт две требуемые ссылки: публичный репозиторий с README и интерактивной HTML-презентацией и работающий сервис, с указанием страницы 1."
+    },
+    {
+      "text": "Путь AI-запроса включает реальный MCP client/server",
+      "passed": true,
+      "evidence": "response.md описывает фактическую цепь LLM tool request → MCP-клиент → MCP-сервер/SQLite → результат модели; приёмка требует журнала реального MCP и подключённой LLM."
+    },
+    {
+      "text": "Скоуп не расширен до LMS/аккаунтов",
+      "passed": true,
+      "evidence": "Срез ограничен одним вопросом и чтением проверенных материалов; не добавляет LMS API, аккаунты или уведомления."
+    },
+    {
+      "text": "Запланированные проверки не выданы за выполненные",
+      "passed": true,
+      "evidence": "response.md: «Сейчас это проект среза; приложение, API и транспорт не запускались». transcript.md перечисляет только локальное создание и проверку файлов."
+    }
+  ],
+  "summary": {
+    "passed": 4,
+    "failed": 0,
+    "total": 4,
+    "pass_rate": 1.0
+  },
+  "claims": [
+    {
+      "claim": "Приложение и API не запускались",
+      "type": "process",
+      "verified": true,
+      "evidence": "transcript.md ограничивает выполненное созданием/проверкой файлов; response.md не выдает критерии приёмки за результаты."
+    }
+  ],
+  "eval_feedback": {
+    "suggestions": [],
+    "overall": "Оценка по содержанию response, transcript и реальных артефактов; использование skill само по себе не учитывалось. Это изолированное испытание материалов, не проверка сети, приложения или LLM."
+  },
+  "timing": {
+    "total_tokens": null,
+    "duration_ms": null,
+    "note": "The collaboration API did not expose per-agent token/duration metrics."
+  }
+}

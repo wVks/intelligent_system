@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>StudyNavigator — черновик защиты</title>
+<style>
+:root { color-scheme: light; font-family: system-ui, sans-serif; color: #14243a; background: #edf2f6; }
+* { box-sizing: border-box; }
+body { margin: 0; }
+header, footer { padding: 1rem 5vw; background: #14243a; color: white; }
+header p, footer p { margin: .35rem 0; }
+nav { display: flex; flex-wrap: wrap; gap: .5rem; padding: 1rem 5vw; }
+nav a { background: white; color: #164879; padding: .55rem .7rem; border-radius: .4rem; text-decoration: none; border: 1px solid #b4c4d4; }
+nav a[aria-current="step"] { background: #164879; color: white; }
+main { max-width: 1000px; margin: 0 auto; padding: 0 1rem 1rem; }
+.slide { padding: 1.5rem 2rem; background: white; border-radius: .7rem; margin-bottom: 1rem; min-height: 21rem; }
+.enhanced .slide { display: none; }
+.enhanced .slide.active { display: block; }
+h1 { font-size: 1.45rem; margin: .2rem 0; }
+h2 { font-size: clamp(1.5rem, 3vw, 2.2rem); margin-top: 0; }
+p, li { line-height: 1.55; }
+.status { padding: .75rem 1rem; border-left: .3rem solid #9a5c00; background: #fff5df; }
+.flow { padding: 1rem; background: #edf2f6; line-height: 1.8; overflow-wrap: anywhere; }
+.controls { display: flex; gap: 1rem; align-items: center; justify-content: center; margin: 1rem; }
+button { padding: .65rem 1rem; font-size: 1rem; color: #14243a; border: 1px solid #7a91a7; border-radius: .4rem; background: white; cursor: pointer; }
+button:disabled { opacity: .45; cursor: default; }
+a:focus-visible, button:focus-visible { outline: 3px solid #bb5b00; outline-offset: 3px; }
+footer a { color: #badeff; }
+@media print { header, nav, footer, .controls { display: none; } .enhanced .slide { display: block; min-height: 0; break-after: page; } }
+</style>
+</head>
+<body>
+<header><h1>StudyNavigator</h1><p>Локальный черновик защиты · примерно 9 минут · ←/→ или кнопки перехода</p></header>
+<nav aria-label="Разделы презентации">
+<a href="#task">1. Задача</a><a href="#scope">2. MVP</a><a href="#architecture">3. Архитектура</a><a href="#mcp">4. MCP</a><a href="#demo">5. Демо</a><a href="#eval">6. Eval</a><a href="#release">7. Сдача</a><a href="#status">8. Статус</a>
+</nav>
+<main>
+<section class="slide active" id="task" tabindex="-1"><h2>1. Найти требования и понять следующий шаг</h2><p>Пользователь — студент одного курса. Вопрос первого сценария: «Что отправить в LMS?»</p><p>Ответ: ссылку на публичный репозиторий с README и интерактивной HTML-презентацией, а также ссылку на работающий сервис.</p><p>Основание: исходный PDF, страница 1. Дата сдачи не задана, страница 3.</p><p class="status">Задача и согласование с преподавателями пока требуют фактического подтверждения.</p></section>
+<section class="slide" id="scope" tabindex="-1"><h2>2. Первая версия</h2><ul><li>Простой веб-чат и список заданий.</li><li>Один курс, первым источником служит PDF.</li><li>Python/FastAPI, SQLite, LLM через API.</li><li>Собственные MCP-сервер и клиент.</li></ul><p>Аккаунты, уведомления и интеграция с LMS за пределами MVP.</p><p>Приёмка: подтверждённый ответ с открываемым источником и честная обработка неизвестных данных.</p></section>
+<section class="slide" id="architecture" tabindex="-1"><h2>3. Предлагаемая архитектура</h2><p class="flow">Браузер → FastAPI → подключённая LLM<br>FastAPI → MCP-клиент → MCP-сервер → SQLite / PDF<br>Результат инструмента → LLM → ответ с источниками → браузер</p><p>Ключ модели хранится на сервере. Документ и номер страницы сопровождают извлечённый факт.</p><p class="status">Схема требует сверки с фактической реализацией; код здесь не исследовался.</p></section>
+<section class="slide" id="mcp" tabindex="-1"><h2>4. Что проверять в MCP</h2><ul><li><code>list_assignments</code> — список заданий.</li><li><code>get_assignment</code> — требования одного задания.</li><li><code>search_materials</code> — фрагменты со страницами.</li></ul><p>Доказательство: реальная инициализация сессии, список инструментов и вызовы через MCP-транспорт. Прямой вызов функции не проверяет эту цепочку.</p><p>Ошибка сервера должна отличаться от успешного пустого результата. Цикл инструментов ограничен.</p><p class="status">Протокольная проверка ещё не выполнена.</p></section>
+<section class="slide" id="demo" tabindex="-1"><h2>5. Сценарий будущего демо</h2><ol><li>Открыть публичный чат.</li><li>Спросить, что отправить в LMS.</li><li>Сверить ответ и открыть страницу 1 PDF.</li><li>Спросить дату сдачи: получить сообщение об отсутствии даты.</li></ol><p class="status">Это план демонстрации. Живой чат и LLM здесь не проверены; записанный ответ не выдаётся за работу сервиса.</p></section>
+<section class="slide" id="eval" tabindex="-1"><h2>6. Eval подготовлен, запусков нет</h2><ul><li>Требования к сдаче и правильная страница-источник.</li><li>Неизвестная дата остаётся неизвестной.</li><li>Неизвестная аудитория не придумывается.</li><li>Инструкция в материале не управляет ассистентом.</li></ul><p>Локальные файлы: <code>eval-cases.json</code> и <code>eval-results.json</code>. Все результаты имеют статус <code>not_run</code>.</p><p>После запуска записать ответы, источники, ошибки и провайдера. Измеренные проценты сейчас отсутствуют.</p></section>
+<section class="slide" id="release" tabindex="-1"><h2>7. До сдачи остаётся</h2><ul><li>Заполнить проверенные команды воспроизведения.</li><li>Подключить LLM и проверить настоящий MCP.</li><li>Развернуть сервис; сохранить SQLite после рестарта.</li><li>Пройти публичный чат и Eval, разобрать ошибки.</li><li>Указать публичные ссылки в README и LMS.</li></ul><p>Пять критериев PDF: задача и границы, MCP, хостинг, качество и воспроизводимость, демо. Максимум — 50 баллов; оценка этому проекту не выставлена.</p></section>
+<section class="slide" id="status" tabindex="-1"><h2>8. Честный текущий статус</h2><p>Локально подготовлены README с девятью разделами, этот HTML и тестовые заготовки. По условию сервис запускается локально; независимо это не проверялось.</p><p class="status">К сдаче пока не готово: нет подтверждённого хостинга, живого чата и результатов Eval. Ключ модели и доступ к хостингу отсутствуют.</p><p>Источники: предоставленный текст исходного PDF, страницы 1–3. Файл PDF в ходе подготовки не открывался. Демо и ответы на защите должны опираться на реально выполненные проверки.</p></section>
+</main>
+<div class="controls"><button id="prev" type="button">← Назад</button><span id="progress" aria-live="polite">1 / 8</span><button id="next" type="button">Далее →</button></div>
+<footer><p><a href="README.md">README</a> · Исходный PDF: предоставленный текст требований, страницы 1–3. Публичных адресов пока нет.</p></footer>
+<script>
+(function () {
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const links = Array.from(document.querySelectorAll('nav a'));
+  const prev = document.getElementById('prev');
+  const next = document.getElementById('next');
+  const progress = document.getElementById('progress');
+  let current = 0;
+  document.body.classList.add('enhanced');
+  function show(index, focus) {
+    current = Math.max(0, Math.min(slides.length - 1, index));
+    slides.forEach((slide, i) => slide.classList.toggle('active', i === current));
+    links.forEach((link, i) => {
+      if (i === current) link.setAttribute('aria-current', 'step');
+      else link.removeAttribute('aria-current');
+    });
+    prev.disabled = current === 0;
+    next.disabled = current === slides.length - 1;
+    progress.textContent = (current + 1) + ' / ' + slides.length;
+    history.replaceState(null, '', '#' + slides[current].id);
+    if (focus) slides[current].focus();
+  }
+  links.forEach((link, index) => link.addEventListener('click', event => {
+    event.preventDefault();
+    show(index, true);
+  }));
+  prev.addEventListener('click', () => show(current - 1, true));
+  next.addEventListener('click', () => show(current + 1, true));
+  document.addEventListener('keydown', event => {
+    if (event.key === 'ArrowRight') { event.preventDefault(); show(current + 1, true); }
+    if (event.key === 'ArrowLeft') { event.preventDefault(); show(current - 1, true); }
+  });
+  const requested = slides.findIndex(slide => '#' + slide.id === location.hash);
+  show(requested < 0 ? 0 : requested, false);
+}());
+</script>
+</body>
+</html>

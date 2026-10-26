@@ -1,0 +1,4 @@
+interface:
+  display_name: "StudyNavigator: проверка качества"
+  short_description: "Eval ответов, источников, планов и ошибок"
+  default_prompt: "Используй $study-eval, чтобы проверить качество StudyNavigator и сохранить воспроизводимые результаты."

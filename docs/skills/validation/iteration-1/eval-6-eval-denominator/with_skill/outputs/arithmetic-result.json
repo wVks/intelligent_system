@@ -1,0 +1,11 @@
+{
+  "basis": "Числа из условия; сырые результаты не предоставлены",
+  "mode": "offline",
+  "provider": "fake",
+  "case_success_rate": 0.8,
+  "timeout_rate": 0.13333333333333333,
+  "missing_rate": 0.06666666666666667,
+  "successful_cases": 24,
+  "total_cases": 30,
+  "limitation": "Arithmetic on provided aggregates; not an application rerun or semantic review."
+}

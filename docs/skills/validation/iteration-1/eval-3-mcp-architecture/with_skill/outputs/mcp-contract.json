@@ -1,0 +1,45 @@
+{
+  "status": "proposal_not_implemented",
+  "transport": "stdio",
+  "tools": [
+    {
+      "name": "list_assignments",
+      "input": {
+        "course_id": "optional nonempty string"
+      },
+      "output": "assignments[]"
+    },
+    {
+      "name": "get_assignment",
+      "input": {
+        "assignment_id": "required nonempty string"
+      },
+      "output": "assignment with source_refs"
+    },
+    {
+      "name": "search_materials",
+      "input": {
+        "query": "required string, 1..500 characters",
+        "limit": "optional integer, 1..10, default 5"
+      },
+      "output": "matches[] with source_id/page/section/excerpt"
+    }
+  ],
+  "input_additional_properties": false,
+  "unknown_deadline": {
+    "due_date": null,
+    "due_at": null
+  },
+  "proposed_limits": {
+    "max_tool_calls": 4,
+    "total_timeout_seconds": 30
+  },
+  "implementation_prerequisite": "Pin installed SDK and verify exact lifecycle/transport APIs against official docs",
+  "proof_layers": [
+    "unit",
+    "real MCP protocol discovery and call",
+    "stdio subprocess smoke",
+    "fake LLM plus real MCP",
+    "separate live LLM"
+  ]
+}

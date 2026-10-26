@@ -1,0 +1,98 @@
+{
+  "status": "needs_clarification",
+  "due_date": null,
+  "due_at": null,
+  "timezone": "Europe/Moscow",
+  "clarification": "Когда защита и что уже выполнено?",
+  "available_minutes_per_day": 60,
+  "horizon_days": 7,
+  "horizon_origin": "explicit_assumption_not_deadline",
+  "plan": [
+    {
+      "day_index": 1,
+      "task": "Данные и требования",
+      "minutes": 60,
+      "dependencies": [],
+      "origin": "assistant_estimate",
+      "scope_completion_guaranteed": false
+    },
+    {
+      "day_index": 2,
+      "task": "MCP",
+      "minutes": 60,
+      "dependencies": [
+        1
+      ],
+      "origin": "assistant_estimate",
+      "scope_completion_guaranteed": false
+    },
+    {
+      "day_index": 3,
+      "task": "LLM и чат",
+      "minutes": 60,
+      "dependencies": [
+        2
+      ],
+      "origin": "assistant_estimate",
+      "scope_completion_guaranteed": false
+    },
+    {
+      "day_index": 4,
+      "task": "Основной сценарий и источники",
+      "minutes": 60,
+      "dependencies": [
+        3
+      ],
+      "origin": "assistant_estimate",
+      "scope_completion_guaranteed": false
+    },
+    {
+      "day_index": 5,
+      "task": "Eval и разбор ошибок",
+      "minutes": 60,
+      "dependencies": [
+        4
+      ],
+      "origin": "assistant_estimate",
+      "scope_completion_guaranteed": false
+    },
+    {
+      "day_index": 6,
+      "task": "Хостинг и воспроизводимость",
+      "minutes": 60,
+      "dependencies": [
+        5
+      ],
+      "origin": "assistant_estimate",
+      "scope_completion_guaranteed": false
+    },
+    {
+      "day_index": 7,
+      "task": "README и репетиция HTML-защиты",
+      "minutes": 60,
+      "dependencies": [
+        6
+      ],
+      "origin": "assistant_estimate",
+      "scope_completion_guaranteed": false
+    }
+  ],
+  "total_minutes": 420,
+  "whole_project_feasibility": "unknown_until_work_estimated",
+  "missing_information": [
+    "defense_date",
+    "current_progress"
+  ],
+  "source_refs": [
+    {
+      "source_id": "project-pdf",
+      "page": 1,
+      "excerpt": "Нужно создать публичный репозиторий, реализовать MCP-интеграцию, AI-логику с подключённой LLM и WEB/TG/MAX/etc интерфейс; развернуть на хостинге; провести Eval и оформить разбор ошибок в README; подготовить интерактивную HTML-презентацию для защиты до 10 минут."
+    },
+    {
+      "source_id": "project-pdf",
+      "page": 2,
+      "excerpt": "синхронная защита до 10 минут"
+    }
+  ]
+}

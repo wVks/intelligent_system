@@ -1,0 +1,35 @@
+{
+  "expectations": [
+    {
+      "text": "Указан bind 0.0.0.0 и порт из переменной PORT",
+      "passed": true,
+      "evidence": "response.md предлагает uvicorn app.main:app --host0.0.0.0 --port \"$PORT\", связывает PORT=10000 с портом10000 и оговаривает раскрытие переменной shell/формат платформы."
+    },
+    {
+      "text": "Результат ограничен командой старта, без создания HTML/README/полного Eval",
+      "passed": true,
+      "evidence": "Результат — одна команда и относящиеся к ней bind/PORT/shell проверки. response.md явно исключает полный аудит/Eval/защитные материалы, в outputs нет созданных HTML/README."
+    },
+    {
+      "text": "Не утверждается, что импорт app.main или хостинг проверены",
+      "passed": true,
+      "evidence": "response.md: файлы не менялись, Uvicorn не запускался, сетевые проверки не выполнялись. Проверка прослушивания/достижимости описана как будущая; импорт app.main не объявлен проверенным."
+    }
+  ],
+  "summary": {
+    "passed": 3,
+    "failed": 0,
+    "total": 3,
+    "pass_rate": 1.0
+  },
+  "claims": [],
+  "eval_feedback": {
+    "suggestions": [],
+    "overall": "Независимая оценка фактических v2 response/transcript/артефактов по тем же стандартам, что v1. Current skills не читались. Наличие skill не даёт балл; проектирование не обязано доказывать ещё не выполненные сетевые/live проверки."
+  },
+  "timing": {
+    "total_tokens": null,
+    "duration_ms": null,
+    "note": "The collaboration API did not expose per-agent token/duration metrics."
+  }
+}

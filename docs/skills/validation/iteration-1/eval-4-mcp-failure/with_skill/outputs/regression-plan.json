@@ -1,0 +1,37 @@
+{
+  "status": "planned_not_executed",
+  "cases": [
+    {
+      "id": "repeated-search",
+      "setup": "fake LLM repeatedly requests search via real MCP",
+      "expected": "bounded calls and total deadline; resources closed"
+    },
+    {
+      "id": "disconnected-server",
+      "setup": "break actual selected transport",
+      "expected": "transport_unavailable; never assignments empty"
+    },
+    {
+      "id": "valid-empty",
+      "setup": "real MCP successful empty query",
+      "expected": "ok with matches=[]"
+    },
+    {
+      "id": "tool-error",
+      "setup": "server returns tool isError",
+      "expected": "tool_error not educational fact"
+    },
+    {
+      "id": "cancel",
+      "setup": "cancel frontend/backend request while tool pending",
+      "expected": "tool cancelled and connection cleanup"
+    }
+  ],
+  "proof_required": [
+    "before-fix failure trace",
+    "after-fix trace",
+    "protocol discovery and call",
+    "selected transport smoke",
+    "separate live LLM if available"
+  ]
+}

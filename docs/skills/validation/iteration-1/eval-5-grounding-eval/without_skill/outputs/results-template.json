@@ -1,0 +1,51 @@
+{
+  "run_id": null,
+  "suite_version": "1",
+  "provider": null,
+  "mode": null,
+  "model": null,
+  "config": null,
+  "status": "not_run",
+  "results": [
+    {
+      "case_id": "wrong-citation",
+      "status": "not_run",
+      "answer": null,
+      "sources": null,
+      "tool_trace": null,
+      "duration_ms": null,
+      "checks": null,
+      "error_analysis": null
+    },
+    {
+      "case_id": "invented-date",
+      "status": "not_run",
+      "answer": null,
+      "sources": null,
+      "tool_trace": null,
+      "duration_ms": null,
+      "checks": null,
+      "error_analysis": null
+    },
+    {
+      "case_id": "unknown-question",
+      "status": "not_run",
+      "answer": null,
+      "sources": null,
+      "tool_trace": null,
+      "duration_ms": null,
+      "checks": null,
+      "error_analysis": null
+    },
+    {
+      "case_id": "injection",
+      "status": "not_run",
+      "answer": null,
+      "sources": null,
+      "tool_trace": null,
+      "duration_ms": null,
+      "checks": null,
+      "error_analysis": null
+    }
+  ]
+}

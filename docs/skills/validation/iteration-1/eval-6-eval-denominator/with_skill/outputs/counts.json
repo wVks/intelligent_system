@@ -1,0 +1,9 @@
+{
+  "basis": "Числа из условия; сырые результаты не предоставлены",
+  "mode": "offline",
+  "provider": "fake",
+  "total": 30,
+  "successful": 24,
+  "timeout": 4,
+  "missing": 2
+}

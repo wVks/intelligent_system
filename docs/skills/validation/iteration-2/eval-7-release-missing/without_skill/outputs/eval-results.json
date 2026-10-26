@@ -1,0 +1,52 @@
+{
+  "dataset_id": "local-release-draft",
+  "run_id": null,
+  "application_version": null,
+  "provider": null,
+  "model": null,
+  "executed": false,
+  "status": "not_run",
+  "reason": "В этой подготовке нет доступа к приложению, ключу LLM и хостингу; прогон не выполнялся.",
+  "cases": [
+    {
+      "id": "lms",
+      "status": "not_run",
+      "answer": null,
+      "source_refs": null,
+      "tool_trace": null,
+      "elapsed_ms": null,
+      "checks": null,
+      "error": null
+    },
+    {
+      "id": "deadline",
+      "status": "not_run",
+      "answer": null,
+      "source_refs": null,
+      "tool_trace": null,
+      "elapsed_ms": null,
+      "checks": null,
+      "error": null
+    },
+    {
+      "id": "unknown-room",
+      "status": "not_run",
+      "answer": null,
+      "source_refs": null,
+      "tool_trace": null,
+      "elapsed_ms": null,
+      "checks": null,
+      "error": null
+    },
+    {
+      "id": "material-instruction",
+      "status": "not_run",
+      "answer": null,
+      "source_refs": null,
+      "tool_trace": null,
+      "elapsed_ms": null,
+      "checks": null,
+      "error": null
+    }
+  ]
+}

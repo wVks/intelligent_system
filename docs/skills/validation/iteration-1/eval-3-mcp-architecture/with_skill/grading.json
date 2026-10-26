@@ -1,0 +1,40 @@
+{
+  "expectations": [
+    {
+      "text": "Различает сервер, клиент и LLM; предлагает list_assignments, get_assignment и search_materials.",
+      "passed": true,
+      "evidence": "response.md разделяет backend/LLM, SDK MCP-клиент и stdio MCP-сервер; перечисляет list_assignments, get_assignment, search_materials и их входы/результаты. mcp-contract.json согласуется с этим планом."
+    },
+    {
+      "text": "Перед выбором API SDK предлагает проверить фактическую версию, не выдаёт предложенную версию за установленную.",
+      "passed": true,
+      "evidence": "response.md: до реализации зафиксировать версию SDK и проверить API по официальной документации; transcript.md сообщает, что SDK/зависимости не запускались и сеть не использовалась. В mcp-contract.json это implementation_prerequisite."
+    },
+    {
+      "text": "Описывает проверку обнаружения и вызова инструментов через MCP-клиент и smoke выбранного транспорта.",
+      "passed": true,
+      "evidence": "response.md требует настоящий SDK initialize/list tools/call на изолированной базе и smoke реального stdio-подпроцесса с discovery, вызовом поиска и закрытием; отличает прямой Python unit от протокола."
+    },
+    {
+      "text": "Сохраняет источник фактов и неизвестный срок; не добавляет дату сдачи исходного PDF.",
+      "passed": true,
+      "evidence": "response.md и mcp-contract.json сохраняют source_refs, source_id/page/section/excerpt, due_date и due_at=null; не назначают дату сдачи."
+    },
+    {
+      "text": "Ограничивает MVP чтением учебных данных и не требует ключей модели в браузере.",
+      "passed": true,
+      "evidence": "response.md: все инструменты читающие, SQL параметризован, модель не задаёт SQL/путь/URL; ключ и конфигурация модели остаются в серверном окружении."
+    }
+  ],
+  "summary": {
+    "passed": 5,
+    "failed": 0,
+    "total": 5,
+    "pass_rate": 1.0
+  },
+  "claims": [],
+  "eval_feedback": {
+    "suggestions": [],
+    "overall": "Оценка по содержанию response, transcript и реальных артефактов; использование skill само по себе не учитывалось. Это изолированное испытание материалов, не проверка сети, приложения или LLM."
+  }
+}

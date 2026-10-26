@@ -1,0 +1,35 @@
+{
+  "expectations": [
+    {
+      "text": "Указан bind 0.0.0.0 и порт из переменной PORT",
+      "passed": true,
+      "evidence": "response.md даёт bind0.0.0.0 и --port \"$PORT\"; при PORT=10000 ожидает10000. Для платформы без раскрытия переменной приведён sh -c с exec и объяснены ограничения неизвестного формата платформы."
+    },
+    {
+      "text": "Результат ограничен командой старта, без создания HTML/README/полного Eval",
+      "passed": true,
+      "evidence": "Ответ ограничен стартовой командой, shell/сигналами и проверкой порта; полный аудит не проводился, HTML/README/Eval не создавались."
+    },
+    {
+      "text": "Не утверждается, что импорт app.main или хостинг проверены",
+      "passed": true,
+      "evidence": "response.md и transcript.md явно говорят, что запуск не выполнен, файлы/сервис не проверялись. Будущая проверка журнала/маршрутизации не выдана за успешную."
+    }
+  ],
+  "summary": {
+    "passed": 3,
+    "failed": 0,
+    "total": 3,
+    "pass_rate": 1.0
+  },
+  "claims": [],
+  "eval_feedback": {
+    "suggestions": [],
+    "overall": "Независимая оценка фактических v2 response/transcript/артефактов по тем же стандартам, что v1. Current skills не читались. Наличие skill не даёт балл; проектирование не обязано доказывать ещё не выполненные сетевые/live проверки."
+  },
+  "timing": {
+    "total_tokens": null,
+    "duration_ms": null,
+    "note": "The collaboration API did not expose per-agent token/duration metrics."
+  }
+}

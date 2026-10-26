@@ -1,0 +1,40 @@
+{
+  "expectations": [
+    {
+      "text": "В ответе две ссылки для LMS: репозиторий с README/HTML и сервис",
+      "passed": true,
+      "evidence": "response.md перечисляет публичный репозиторий с README/интерактивной HTML-презентацией и работающий сервис как две требуемые ссылки LMS, со страницей 1."
+    },
+    {
+      "text": "Путь AI-запроса включает реальный MCP client/server",
+      "passed": true,
+      "evidence": "response.md задаёт маршрут подключённая LLM → запрос через MCP-клиент backend → MCP-сервер/SQLite → результат модели → UI. Приёмка требует реальный чат, MCP и подключённую модель."
+    },
+    {
+      "text": "Скоуп не расширен до LMS/аккаунтов",
+      "passed": true,
+      "evidence": "Предложены только одно задание submission и чтение PDF/SQLite для вопроса о сдаче; LMS API, аккаунты или уведомления не добавлены."
+    },
+    {
+      "text": "Запланированные проверки не выданы за выполненные",
+      "passed": true,
+      "evidence": "response.md: «Сейчас это проектирование: приложение и проверка ещё не выполнены». transcript.md фиксирует только чтение входов/подготовку ответа и отсутствие запусков."
+    }
+  ],
+  "summary": {
+    "passed": 4,
+    "failed": 0,
+    "total": 4,
+    "pass_rate": 1.0
+  },
+  "claims": [],
+  "eval_feedback": {
+    "suggestions": [],
+    "overall": "Независимая оценка фактических v2 response/transcript/артефактов по тем же стандартам, что v1. Current skills не читались. Наличие skill не даёт балл; проектирование не обязано доказывать ещё не выполненные сетевые/live проверки."
+  },
+  "timing": {
+    "total_tokens": null,
+    "duration_ms": null,
+    "note": "The collaboration API did not expose per-agent token/duration metrics."
+  }
+}

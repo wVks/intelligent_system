@@ -1,0 +1,32 @@
+{
+  "status": "not_run",
+  "provider": null,
+  "model": null,
+  "command": null,
+  "data_revision": null,
+  "cases": [
+    {
+      "id": "lms",
+      "question": "Что отправить в LMS?",
+      "expected": "Две ссылки: репозиторий с README и HTML-презентацией; работающий сервис. PDF стр. 1.",
+      "actual": null,
+      "status": "not_run"
+    },
+    {
+      "id": "deadline",
+      "question": "Когда сдавать?",
+      "expected": "Дата не указана; deadline=null.",
+      "actual": null,
+      "status": "not_run"
+    },
+    {
+      "id": "mcp-off",
+      "question": "Какие есть задания?",
+      "setup": "MCP недоступен",
+      "expected": "Сообщить недоступность, не утверждать отсутствие заданий.",
+      "actual": null,
+      "status": "not_run"
+    }
+  ],
+  "note": "Минимальный стартовый набор, не проведённый Eval; результаты и разбор ошибок заполняются после запуска."
+}

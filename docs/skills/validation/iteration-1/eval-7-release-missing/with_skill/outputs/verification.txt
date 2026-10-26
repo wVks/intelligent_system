@@ -1,0 +1,4 @@
+HTML разобран stdlib HTMLParser: 6 слайдов; внешних src/href нет.
+JavaScript: node --check, exit code 0.
+Открытие в IAB пытались выполнить через cua.createBrowserTab(file://...): Browser is not available: iab.
+Браузерное отображение, фактическая клавиатурная навигация/кнопки и хронометраж не проверены. Это статическая проверка, не UI-тест и не readiness сервиса.

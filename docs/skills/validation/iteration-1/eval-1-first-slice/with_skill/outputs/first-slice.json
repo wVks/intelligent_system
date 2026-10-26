@@ -1,0 +1,40 @@
+{
+  "status": "design_only",
+  "question": "Что отправить в LMS?",
+  "assignment": {
+    "assignment_id": "personal-project",
+    "course_id": "course-1",
+    "title": "Личный проект",
+    "due_date": null,
+    "due_at": null,
+    "requirements": [
+      {
+        "text": "Ссылка на публичный репозиторий с README и HTML-презентацией",
+        "source_refs": [
+          "pdf-p1-lms"
+        ]
+      },
+      {
+        "text": "Ссылка на работающий сервис",
+        "source_refs": [
+          "pdf-p1-lms"
+        ]
+      }
+    ]
+  },
+  "sources": [
+    {
+      "id": "pdf-p1-lms",
+      "source_id": "project-pdf",
+      "page": 1,
+      "section": null,
+      "excerpt": "В LMS загрузить ссылку на публичный репозиторий с HTML-презентацией и README и ссылку на работающий сервис",
+      "href": "/materials/project-pdf#page=1"
+    }
+  ],
+  "proposed_limits": {
+    "max_tool_calls": 4,
+    "total_timeout_seconds": 30,
+    "max_search_results": 3
+  }
+}

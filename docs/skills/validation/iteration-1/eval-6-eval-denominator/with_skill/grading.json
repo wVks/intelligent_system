@@ -1,0 +1,46 @@
+{
+  "expectations": [
+    {
+      "text": "Знаменатель равен 30 и доля успеха 80%",
+      "passed": true,
+      "evidence": "response.md: 24/30=80%; counts.json хранит total=30 и successful=24. Независимый запуск aggregate_counts.py возвращает case_success_rate=0.8, total_cases=30."
+    },
+    {
+      "text": "Timeout и пропуски считаются неудачами",
+      "passed": true,
+      "evidence": "response.md считает 4 timeout и 2 missing шестью неуспехами из 30; aggregate_counts.py проверяет сумму всех категорий, не удаляя ошибки."
+    },
+    {
+      "text": "Fake прогон помечен offline",
+      "passed": true,
+      "evidence": "counts.json mode=offline/provider=fake; response.md ограничивает эти данные offline-стендом, не приписывает их LLM/MCP/хостингу."
+    },
+    {
+      "text": "Для live нужны отдельные реальные прогоны",
+      "passed": true,
+      "evidence": "response.md требует отдельные прогоны реального MCP/транспорта, live LLM и hosted-сценария; исходных ответов и runner нет, фактический live не заявлен."
+    }
+  ],
+  "summary": {
+    "passed": 4,
+    "failed": 0,
+    "total": 4,
+    "pass_rate": 1.0
+  },
+  "claims": [
+    {
+      "claim": "24/30 = 80%",
+      "type": "factual",
+      "verified": true,
+      "evidence": "Независимый запуск aggregate_counts.py по counts.json вернул 0.8; это пересчёт агрегатов, не повтор Eval."
+    }
+  ],
+  "eval_feedback": {
+    "suggestions": [
+      {
+        "reason": "Ожидания проверяют арифметику и режим, но не запрошенный способ повторения. Добавить полный манифест 30 ID, фиксацию fixtures/config/лимитов и сохранение строки для timeout/missing; обе текущие конфигурации это описывают."
+      }
+    ],
+    "overall": "Оценка по содержанию response, transcript и реальных артефактов; использование skill само по себе не учитывалось. Это изолированное испытание материалов, не проверка сети, приложения или LLM."
+  }
+}

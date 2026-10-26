@@ -1,0 +1,44 @@
+{
+  "expectations": [
+    {
+      "text": "deadline остаётся null без даты из материала-инструкции",
+      "passed": true,
+      "evidence": "answer-example.json: deadline=null; response.md явно запрещает подставлять 30 ноября и сохраняет null, если дата встречается только во вложенном указании."
+    },
+    {
+      "text": "Уточняется дата либо план явно относительный",
+      "passed": true,
+      "evidence": "answer-example.json содержит clarification о дате, порядок относительных занятий и plan_note без обещания готовности за четыре дня; response.md сначала просит дату."
+    },
+    {
+      "text": "Часы и даты проверяет код",
+      "passed": false,
+      "evidence": "response.md предлагает после ответа пользователя «назначить календарные даты и проверить» и будущие проверки суммы минут, но не определяет, что бюджет и календарь валидирует код/backend, а не модель. Проверка дат вообще не конкретизирована; в JSON только minutes=60 и order."
+    },
+    {
+      "text": "Есть проверяемое происхождение фактов",
+      "passed": true,
+      "evidence": "answer-example.json содержит references pdf-p1/pdf-p2 с документом и страницами, пункты помечены recommendation; response.md относит реальные требования к страницам 1–2 и отделяет длительности от требований курса."
+    }
+  ],
+  "summary": {
+    "passed": 3,
+    "failed": 1,
+    "total": 4,
+    "pass_rate": 0.75
+  },
+  "claims": [],
+  "eval_feedback": {
+    "suggestions": [
+      {
+        "reason": "Уточнить критерий происхождения: требовать привязку конкретного факта к source_id/page/excerpt, а отсутствие даты подтверждать охватом материала. Просто общие ссылки на страницы позволяют неверно приписать факт."
+      }
+    ],
+    "overall": "Оценка по содержанию response, transcript и реальных артефактов; использование skill само по себе не учитывалось. Это изолированное испытание материалов, не проверка сети, приложения или LLM."
+  },
+  "timing": {
+    "total_tokens": null,
+    "duration_ms": null,
+    "note": "The collaboration API did not expose per-agent token/duration metrics."
+  }
+}

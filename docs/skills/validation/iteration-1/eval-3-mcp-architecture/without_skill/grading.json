@@ -1,0 +1,45 @@
+{
+  "expectations": [
+    {
+      "text": "Различает сервер, клиент и LLM; предлагает list_assignments, get_assignment и search_materials.",
+      "passed": true,
+      "evidence": "response.md разделяет FastAPI, адаптер LLM/MCP-клиент, отдельный MCP-сервер и SQLite; описаны все три инструмента list_assignments/get_assignment/search_materials."
+    },
+    {
+      "text": "Перед выбором API SDK предлагает проверить фактическую версию, не выдаёт предложенную версию за установленную.",
+      "passed": false,
+      "evidence": "В response.md и transcript.md нет проверки установленной версии SDK или сверки API с выбранной версией. Предложен stdio и initialize/tools/list/tools/call, но зависимость от фактического SDK не оговорена."
+    },
+    {
+      "text": "Описывает проверку обнаружения и вызова инструментов через MCP-клиент и smoke выбранного транспорта.",
+      "passed": true,
+      "evidence": "response.md планирует отдельный MCP-процесс, initialize → tools/list → tools/call для всех трёх инструментов, отрицательный тест отключения и trace; выше явно выбран stdio."
+    },
+    {
+      "text": "Сохраняет источник фактов и неизвестный срок; не добавляет дату сдачи исходного PDF.",
+      "passed": true,
+      "evidence": "response.md сохраняет исходные документы/фрагменты со страницами, source_refs, проверку первичных записей по PDF; due_at=null и отсутствие даты сдачи указаны явно."
+    },
+    {
+      "text": "Ограничивает MVP чтением учебных данных и не требует ключей модели в браузере.",
+      "passed": true,
+      "evidence": "Предложены только чтение заданий/материалов без векторной БД; браузер не обращается к модели/SQLite, ключ модели только на сервере."
+    }
+  ],
+  "summary": {
+    "passed": 4,
+    "failed": 1,
+    "total": 5,
+    "pass_rate": 0.8
+  },
+  "claims": [],
+  "eval_feedback": {
+    "suggestions": [],
+    "overall": "Оценка по содержанию response, transcript и реальных артефактов; использование skill само по себе не учитывалось. Это изолированное испытание материалов, не проверка сети, приложения или LLM."
+  },
+  "timing": {
+    "total_tokens": null,
+    "duration_ms": null,
+    "note": "The collaboration API did not expose per-agent token/duration metrics."
+  }
+}

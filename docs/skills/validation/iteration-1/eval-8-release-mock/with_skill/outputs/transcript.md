@@ -1,0 +1,3 @@
+Прочитаны inputs/context.txt и inputs/prompts.json. Выбран study-release: .agents/skills/study-release/SKILL.md и references/submission.md; для различения unit/MCP/offline/live использованы прочитанные .agents/skills/study-mcp/SKILL.md, references/contracts.md и .agents/skills/study-eval/SKILL.md, references/evaluation.md. Применена уже прочитанная версия skills, без перечитывания изменяющихся файлов.
+
+Созданы response.md, README-status.md и pre-submission-checks.md. Ни один заявленный в сценарии тест не объявлен лично выполненным. Код/URL не предоставлены, проверки по сети запрещены. MCP-клиент, модель, хостинг и рестарт не запускались. cases.json/чужие результаты не читались. Все изменения только в outputs случая 8; соседние результаты не использованы.

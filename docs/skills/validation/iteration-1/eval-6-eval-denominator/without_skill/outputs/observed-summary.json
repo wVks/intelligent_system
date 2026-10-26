@@ -1,0 +1,9 @@
+{
+  "provenance": "Агрегаты из prompt; не собственный запуск",
+  "provider": "fake",
+  "total": 30,
+  "success": 24,
+  "timeout": 4,
+  "no_result": 2,
+  "content_checks": null
+}

@@ -1,0 +1,51 @@
+{
+  "expectations": [
+    {
+      "text": "Знаменатель равен 30 и доля успеха 80%",
+      "passed": true,
+      "evidence": "response.md и calculation.txt дают 24/30=80%; observed-summary.json total=30. Независимый запуск summarize.py подтверждает расчёт."
+    },
+    {
+      "text": "Timeout и пропуски считаются неудачами",
+      "passed": true,
+      "evidence": "response.md прямо сохраняет все 30 в знаменателе, отмечает 20% неуспешных обращений, четыре timeout и два отсутствующих результата."
+    },
+    {
+      "text": "Fake прогон помечен offline",
+      "passed": true,
+      "evidence": "response.md помечает провайдера fake и относит цифры к тестовому стенду; отдельно требует сравнивать fake и live. calculation.txt тоже указывает Provider: fake и отсутствие измеренного качества содержания."
+    },
+    {
+      "text": "Для live нужны отдельные реальные прогоны",
+      "passed": true,
+      "evidence": "response.md требует отдельный live-прогон с указанными моделью/датой при появлении доступа и явно отделяет его от выполненной арифметики."
+    }
+  ],
+  "summary": {
+    "passed": 4,
+    "failed": 0,
+    "total": 4,
+    "pass_rate": 1.0
+  },
+  "claims": [
+    {
+      "claim": "24/30 = 80%",
+      "type": "factual",
+      "verified": true,
+      "evidence": "Независимый запуск summarize.py дал 80.0%, совпадает с calculation.txt."
+    }
+  ],
+  "eval_feedback": {
+    "suggestions": [
+      {
+        "reason": "Ожидания проверяют арифметику и режим, но не запрошенный способ повторения. Добавить полный манифест 30 ID, фиксацию fixtures/config/лимитов и сохранение строки для timeout/missing; обе текущие конфигурации это описывают."
+      }
+    ],
+    "overall": "Оценка по содержанию response, transcript и реальных артефактов; использование skill само по себе не учитывалось. Это изолированное испытание материалов, не проверка сети, приложения или LLM."
+  },
+  "timing": {
+    "total_tokens": null,
+    "duration_ms": null,
+    "note": "The collaboration API did not expose per-agent token/duration metrics."
+  }
+}

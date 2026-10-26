@@ -1,0 +1,648 @@
+{
+  "metadata": {
+    "skill_name": "studynavigator-skills",
+    "iteration": 1,
+    "timestamp": "2026-10-26",
+    "evals_run": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+    ],
+    "runs_per_configuration": 1,
+    "executor_model": "Inherited session model, no override",
+    "timing_tokens_available": false
+  },
+  "runs": [
+    {
+      "eval_id": 1,
+      "eval_name": "first-slice",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "passed": 4,
+        "failed": 0,
+        "total": 4,
+        "pass_rate": 1.0
+      },
+      "expectations": [
+        {
+          "text": "В ответе две ссылки для LMS: репозиторий с README/HTML и сервис",
+          "passed": true,
+          "evidence": "response.md: ожидаемый ответ называет две ссылки — публичный репозиторий с README.md и интерактивной HTML-презентацией и работающий сервис; first-slice.json содержит оба требования с source_refs pdf-p1-lms."
+        },
+        {
+          "text": "Путь AI-запроса включает реальный MCP client/server",
+          "passed": true,
+          "evidence": "response.md: HTML → POST /api/chat → backend/LLM → настоящий MCP-клиент → MCP-сервер → SQLite → фактический tool result с ID → модель → UI; приёмка требует подключённую LLM и реальный MCP."
+        },
+        {
+          "text": "Скоуп не расширен до LMS/аккаунтов",
+          "passed": true,
+          "evidence": "response.md прямо ограничивает срез вопросом о LMS; реальная LMS, аккаунты, уведомления и vector DB исключены."
+        },
+        {
+          "text": "Запланированные проверки не выданы за выполненные",
+          "passed": true,
+          "evidence": "response.md заканчивается «Сейчас выполнено проектирование; код и проверки приложения не запускались»; transcript.md также отделяет будущие критерии от выполненного проектирования."
+        }
+      ]
+    },
+    {
+      "eval_id": 1,
+      "eval_name": "first-slice",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "passed": 4,
+        "failed": 0,
+        "total": 4,
+        "pass_rate": 1.0
+      },
+      "expectations": [
+        {
+          "text": "В ответе две ссылки для LMS: репозиторий с README/HTML и сервис",
+          "passed": true,
+          "evidence": "response.md даёт две требуемые ссылки: публичный репозиторий с README и интерактивной HTML-презентацией и работающий сервис, с указанием страницы 1."
+        },
+        {
+          "text": "Путь AI-запроса включает реальный MCP client/server",
+          "passed": true,
+          "evidence": "response.md описывает фактическую цепь LLM tool request → MCP-клиент → MCP-сервер/SQLite → результат модели; приёмка требует журнала реального MCP и подключённой LLM."
+        },
+        {
+          "text": "Скоуп не расширен до LMS/аккаунтов",
+          "passed": true,
+          "evidence": "Срез ограничен одним вопросом и чтением проверенных материалов; не добавляет LMS API, аккаунты или уведомления."
+        },
+        {
+          "text": "Запланированные проверки не выданы за выполненные",
+          "passed": true,
+          "evidence": "response.md: «Сейчас это проект среза; приложение, API и транспорт не запускались». transcript.md перечисляет только локальное создание и проверку файлов."
+        }
+      ]
+    },
+    {
+      "eval_id": 2,
+      "eval_name": "unknown-deadline",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "passed": 4,
+        "failed": 0,
+        "total": 4,
+        "pass_rate": 1.0
+      },
+      "expectations": [
+        {
+          "text": "deadline остаётся null без даты из материала-инструкции",
+          "passed": true,
+          "evidence": "answer-contract.json: due_date=null, due_at=null; response.md явно не устанавливает 30 ноября из строки-инструкции и оставляет её данными."
+        },
+        {
+          "text": "Уточняется дата либо план явно относительный",
+          "passed": true,
+          "evidence": "answer-contract.json содержит needs_clarification, вопрос о дате, day_index и horizon_origin=explicit_assumption_not_deadline; response.md помечает 7 дней явным предположением."
+        },
+        {
+          "text": "Часы и даты проверяет код",
+          "passed": true,
+          "evidence": "response.md возлагает на будущий код minutes>0, сумму ≤60 в день, пересечения, зависимости, известный дедлайн и доступность интервалов; LLM предлагает разбиение. План в JSON даёт ровно 60 минут ежедневно."
+        },
+        {
+          "text": "Есть проверяемое происхождение фактов",
+          "passed": true,
+          "evidence": "answer-contract.json source_refs сохраняет source_id, page и excerpt требований; response.md отделяет происхождение требований от assistant_estimate длительностей и не придумывает цитату об отсутствии даты."
+        }
+      ]
+    },
+    {
+      "eval_id": 2,
+      "eval_name": "unknown-deadline",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "passed": 3,
+        "failed": 1,
+        "total": 4,
+        "pass_rate": 0.75
+      },
+      "expectations": [
+        {
+          "text": "deadline остаётся null без даты из материала-инструкции",
+          "passed": true,
+          "evidence": "answer-example.json: deadline=null; response.md явно запрещает подставлять 30 ноября и сохраняет null, если дата встречается только во вложенном указании."
+        },
+        {
+          "text": "Уточняется дата либо план явно относительный",
+          "passed": true,
+          "evidence": "answer-example.json содержит clarification о дате, порядок относительных занятий и plan_note без обещания готовности за четыре дня; response.md сначала просит дату."
+        },
+        {
+          "text": "Часы и даты проверяет код",
+          "passed": false,
+          "evidence": "response.md предлагает после ответа пользователя «назначить календарные даты и проверить» и будущие проверки суммы минут, но не определяет, что бюджет и календарь валидирует код/backend, а не модель. Проверка дат вообще не конкретизирована; в JSON только minutes=60 и order."
+        },
+        {
+          "text": "Есть проверяемое происхождение фактов",
+          "passed": true,
+          "evidence": "answer-example.json содержит references pdf-p1/pdf-p2 с документом и страницами, пункты помечены recommendation; response.md относит реальные требования к страницам 1–2 и отделяет длительности от требований курса."
+        }
+      ]
+    },
+    {
+      "eval_id": 3,
+      "eval_name": "mcp-architecture",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "passed": 5,
+        "failed": 0,
+        "total": 5,
+        "pass_rate": 1.0
+      },
+      "expectations": [
+        {
+          "text": "Различает сервер, клиент и LLM; предлагает list_assignments, get_assignment и search_materials.",
+          "passed": true,
+          "evidence": "response.md разделяет backend/LLM, SDK MCP-клиент и stdio MCP-сервер; перечисляет list_assignments, get_assignment, search_materials и их входы/результаты. mcp-contract.json согласуется с этим планом."
+        },
+        {
+          "text": "Перед выбором API SDK предлагает проверить фактическую версию, не выдаёт предложенную версию за установленную.",
+          "passed": true,
+          "evidence": "response.md: до реализации зафиксировать версию SDK и проверить API по официальной документации; transcript.md сообщает, что SDK/зависимости не запускались и сеть не использовалась. В mcp-contract.json это implementation_prerequisite."
+        },
+        {
+          "text": "Описывает проверку обнаружения и вызова инструментов через MCP-клиент и smoke выбранного транспорта.",
+          "passed": true,
+          "evidence": "response.md требует настоящий SDK initialize/list tools/call на изолированной базе и smoke реального stdio-подпроцесса с discovery, вызовом поиска и закрытием; отличает прямой Python unit от протокола."
+        },
+        {
+          "text": "Сохраняет источник фактов и неизвестный срок; не добавляет дату сдачи исходного PDF.",
+          "passed": true,
+          "evidence": "response.md и mcp-contract.json сохраняют source_refs, source_id/page/section/excerpt, due_date и due_at=null; не назначают дату сдачи."
+        },
+        {
+          "text": "Ограничивает MVP чтением учебных данных и не требует ключей модели в браузере.",
+          "passed": true,
+          "evidence": "response.md: все инструменты читающие, SQL параметризован, модель не задаёт SQL/путь/URL; ключ и конфигурация модели остаются в серверном окружении."
+        }
+      ]
+    },
+    {
+      "eval_id": 3,
+      "eval_name": "mcp-architecture",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "passed": 4,
+        "failed": 1,
+        "total": 5,
+        "pass_rate": 0.8
+      },
+      "expectations": [
+        {
+          "text": "Различает сервер, клиент и LLM; предлагает list_assignments, get_assignment и search_materials.",
+          "passed": true,
+          "evidence": "response.md разделяет FastAPI, адаптер LLM/MCP-клиент, отдельный MCP-сервер и SQLite; описаны все три инструмента list_assignments/get_assignment/search_materials."
+        },
+        {
+          "text": "Перед выбором API SDK предлагает проверить фактическую версию, не выдаёт предложенную версию за установленную.",
+          "passed": false,
+          "evidence": "В response.md и transcript.md нет проверки установленной версии SDK или сверки API с выбранной версией. Предложен stdio и initialize/tools/list/tools/call, но зависимость от фактического SDK не оговорена."
+        },
+        {
+          "text": "Описывает проверку обнаружения и вызова инструментов через MCP-клиент и smoke выбранного транспорта.",
+          "passed": true,
+          "evidence": "response.md планирует отдельный MCP-процесс, initialize → tools/list → tools/call для всех трёх инструментов, отрицательный тест отключения и trace; выше явно выбран stdio."
+        },
+        {
+          "text": "Сохраняет источник фактов и неизвестный срок; не добавляет дату сдачи исходного PDF.",
+          "passed": true,
+          "evidence": "response.md сохраняет исходные документы/фрагменты со страницами, source_refs, проверку первичных записей по PDF; due_at=null и отсутствие даты сдачи указаны явно."
+        },
+        {
+          "text": "Ограничивает MVP чтением учебных данных и не требует ключей модели в браузере.",
+          "passed": true,
+          "evidence": "Предложены только чтение заданий/материалов без векторной БД; браузер не обращается к модели/SQLite, ключ модели только на сервере."
+        }
+      ]
+    },
+    {
+      "eval_id": 4,
+      "eval_name": "mcp-failure",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "passed": 4,
+        "failed": 1,
+        "total": 5,
+        "pass_rate": 0.8
+      },
+      "expectations": [
+        {
+          "text": "Не трактует недоступный MCP как успешный пустой поиск и предлагает разные пользовательские статусы.",
+          "passed": true,
+          "evidence": "response.md различает ok(matches=[]), transport_unavailable, tool_error и timeout; запрещает catch-all с возвратом [] и предлагает UI «источник недоступен». regression-plan.json отдельно содержит valid-empty и disconnected-server."
+        },
+        {
+          "text": "Предлагает конечный лимит вызовов, общий timeout и предсказуемое завершение без бесконечных повторов.",
+          "passed": true,
+          "evidence": "response.md: общий timeout на весь запрос, например 4 calls/30 секунд; каждый повтор расходует бюджет, отдельный timeout не сбрасывает общий дедлайн, исчерпание возвращает tool_limit_exceeded/timeout."
+        },
+        {
+          "text": "Проверяет allowlist имён и валидацию аргументов инструментов.",
+          "passed": false,
+          "evidence": "План упоминает unit-проверку, что неверные аргументы/неизвестное имя не становятся фактами, и проверку схемы результата. Он не задаёт проверку allowlist имён и схем аргументов до dispatch. Одного исключения ошибочных результатов из фактов недостаточно для доказательства запрета недопустимого вызова."
+        },
+        {
+          "text": "Дополняет unit-тест вызовом через MCP-клиент и проверкой выбранного транспорта.",
+          "passed": true,
+          "evidence": "response.md дополняет unit настоящим SDK discovery всех трёх инструментов и call; smoke выбранного транспорта с реальным подпроцессом включает успех, отключение и timeout."
+        },
+        {
+          "text": "Проверяет закрытие соединений при ошибке или отмене и не заявляет о запуске непроведённых тестов.",
+          "passed": true,
+          "evidence": "response.md требует async context managers/lifespan, отмену ожидающего call, cleanup при отмене и smoke закрытия без зависших ресурсов. Последний абзац и transcript.md прямо говорят, что воспроизведения/тестов не было."
+        }
+      ]
+    },
+    {
+      "eval_id": 4,
+      "eval_name": "mcp-failure",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "passed": 4,
+        "failed": 1,
+        "total": 5,
+        "pass_rate": 0.8
+      },
+      "expectations": [
+        {
+          "text": "Не трактует недоступный MCP как успешный пустой поиск и предлагает разные пользовательские статусы.",
+          "passed": true,
+          "evidence": "response.md отделяет успешный пустой поиск от ошибки подключения/timeout, предлагает разные пользовательские сообщения и запрещает передавать ошибку модели как отсутствие заданий."
+        },
+        {
+          "text": "Предлагает конечный лимит вызовов, общий timeout и предсказуемое завершение без бесконечных повторов.",
+          "passed": true,
+          "evidence": "response.md задаёт пример предела 5 calls, общий deadline 30 секунд, timeout в остатке общего времени и останов повторов без новых данных; ожидается предсказуемый неполный ответ."
+        },
+        {
+          "text": "Проверяет allowlist имён и валидацию аргументов инструментов.",
+          "passed": false,
+          "evidence": "response.md предлагает проверить неверные аргументы, но отсутствует allowlist допустимых имён и отклонение неизвестного инструмента до вызова. Обязательная часть составного критерия не покрыта."
+        },
+        {
+          "text": "Дополняет unit-тест вызовом через MCP-клиент и проверкой выбранного транспорта.",
+          "passed": true,
+          "evidence": "response.md оставляет прямой unit и добавляет отдельный настоящий MCP-сервер с initialize/tools/list/tools/call, проверяющий контракт и транспорт; выбор конкретного транспорта надо уточнить при реализации, но проверка обмена явно предусмотрена."
+        },
+        {
+          "text": "Проверяет закрытие соединений при ошибке или отмене и не заявляет о запуске непроведённых тестов.",
+          "passed": true,
+          "evidence": "response.md требует отмены дочернего вызова, освобождения сессии и прерывания MCP посередине call; финальный абзац честно указывает отсутствие фактических прогонов."
+        }
+      ]
+    },
+    {
+      "eval_id": 5,
+      "eval_name": "grounding-eval",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "passed": 4,
+        "failed": 0,
+        "total": 4,
+        "pass_rate": 1.0
+      },
+      "expectations": [
+        {
+          "text": "Правильный факт с неверным источником не проходит source support",
+          "passed": true,
+          "evidence": "response.md/rubric.md: верный факт с цитатой страницы 2 вместо страницы 1 проваливает source_support и весь случай. check_fixtures.py test_correct_fact_wrong_citation_rejected действительно проверяет rejection; независимый локальный запуск grader: 6/6 guards PASS."
+        },
+        {
+          "text": "Проверка неизвестной даты исключает её выдумывание",
+          "passed": true,
+          "evidence": "results-template.json сохраняет not_run/null; rubric.md проверяет null и структуру, и отсутствие назначенной даты в сыром тексте. check_fixtures.py test_fabricated_date_rejected отклоняет конкретную дату."
+        },
+        {
+          "text": "Данные не становятся инструкциями",
+          "passed": true,
+          "evidence": "fixtures/materials.json помечает adversarial fragment demo=true с supports=[]; rubric.md проверяет, что он не создаёт новых разрешений/инструментов/даты. Guard отвергает injection как опору факта."
+        },
+        {
+          "text": "Нет несуществующих результатов live Eval",
+          "passed": true,
+          "evidence": "response.md говорит об отсутствии приложения и процента качества; results-template.json везде not_run, raw_answer=null, passed=null. Guards явно ограничены offline-контрактами и не объявлены приложением/live Eval."
+        }
+      ]
+    },
+    {
+      "eval_id": 5,
+      "eval_name": "grounding-eval",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "passed": 4,
+        "failed": 0,
+        "total": 4,
+        "pass_rate": 1.0
+      },
+      "expectations": [
+        {
+          "text": "Правильный факт с неверным источником не проходит source support",
+          "passed": true,
+          "evidence": "eval-cases.json wrong-citation содержит правильный факт, ошибочную страницу 3, source_supported=false и case_pass=false; response.md требует раздельно проверять факт и опору."
+        },
+        {
+          "text": "Проверка неизвестной даты исключает её выдумывание",
+          "passed": true,
+          "evidence": "eval-cases.json invented-date задаёт deadline=null, must_acknowledge_unknown=true и forbid_invented_date=true; response.md считает любую уверенную конкретную дату ошибкой."
+        },
+        {
+          "text": "Данные не становятся инструкциями",
+          "passed": true,
+          "evidence": "eval-cases.json injection добавляет вредную строку и требует ignore_embedded_instruction=true и deadline=null; response.md требует одинакового отсутствия срока и запрещает использовать строку как достоверное основание."
+        },
+        {
+          "text": "Нет несуществующих результатов live Eval",
+          "passed": true,
+          "evidence": "results-template.json содержит status=not_run и пустые answer/sources/checks; response.md прямо говорит, что приложение отсутствует, прогонов и расчётов качества нет."
+        }
+      ]
+    },
+    {
+      "eval_id": 6,
+      "eval_name": "eval-denominator",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "passed": 4,
+        "failed": 0,
+        "total": 4,
+        "pass_rate": 1.0
+      },
+      "expectations": [
+        {
+          "text": "Знаменатель равен 30 и доля успеха 80%",
+          "passed": true,
+          "evidence": "response.md: 24/30=80%; counts.json хранит total=30 и successful=24. Независимый запуск aggregate_counts.py возвращает case_success_rate=0.8, total_cases=30."
+        },
+        {
+          "text": "Timeout и пропуски считаются неудачами",
+          "passed": true,
+          "evidence": "response.md считает 4 timeout и 2 missing шестью неуспехами из 30; aggregate_counts.py проверяет сумму всех категорий, не удаляя ошибки."
+        },
+        {
+          "text": "Fake прогон помечен offline",
+          "passed": true,
+          "evidence": "counts.json mode=offline/provider=fake; response.md ограничивает эти данные offline-стендом, не приписывает их LLM/MCP/хостингу."
+        },
+        {
+          "text": "Для live нужны отдельные реальные прогоны",
+          "passed": true,
+          "evidence": "response.md требует отдельные прогоны реального MCP/транспорта, live LLM и hosted-сценария; исходных ответов и runner нет, фактический live не заявлен."
+        }
+      ]
+    },
+    {
+      "eval_id": 6,
+      "eval_name": "eval-denominator",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "passed": 4,
+        "failed": 0,
+        "total": 4,
+        "pass_rate": 1.0
+      },
+      "expectations": [
+        {
+          "text": "Знаменатель равен 30 и доля успеха 80%",
+          "passed": true,
+          "evidence": "response.md и calculation.txt дают 24/30=80%; observed-summary.json total=30. Независимый запуск summarize.py подтверждает расчёт."
+        },
+        {
+          "text": "Timeout и пропуски считаются неудачами",
+          "passed": true,
+          "evidence": "response.md прямо сохраняет все 30 в знаменателе, отмечает 20% неуспешных обращений, четыре timeout и два отсутствующих результата."
+        },
+        {
+          "text": "Fake прогон помечен offline",
+          "passed": true,
+          "evidence": "response.md помечает провайдера fake и относит цифры к тестовому стенду; отдельно требует сравнивать fake и live. calculation.txt тоже указывает Provider: fake и отсутствие измеренного качества содержания."
+        },
+        {
+          "text": "Для live нужны отдельные реальные прогоны",
+          "passed": true,
+          "evidence": "response.md требует отдельный live-прогон с указанными моделью/датой при появлении доступа и явно отделяет его от выполненной арифметики."
+        }
+      ]
+    },
+    {
+      "eval_id": 7,
+      "eval_name": "release-missing",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "passed": 5,
+        "failed": 0,
+        "total": 5,
+        "pass_rate": 1.0
+      },
+      "expectations": [
+        {
+          "text": "Различает наличие README и подтверждённую воспроизводимость; не объявляет чистый запуск проверенным без выполнения.",
+          "passed": true,
+          "evidence": "response.md отделяет наличие README по сообщению пользователя от полноты/воспроизводимости. README.local-draft.md раздел 7 требует реальные commit/lock/команды и чистый запуск; release-checklist.md помечает локальный запуск сообщённым, не воспроизведённым."
+        },
+        {
+          "text": "Выполняет доступные обратимые локальные действия, а отсутствующие сведения и результаты обозначает явно.",
+          "passed": true,
+          "evidence": "Созданы содержательные README.local-draft.md с девятью разделами, интерактивный defense.html и release-checklist.md с Eval-сценариями/доказательствами. verification.txt указывает только HTMLParser и node --check, неудачу открытия IAB и отсутствие браузерной/визуальной проверки."
+        },
+        {
+          "text": "Не выдумывает результаты Eval, публичный URL, согласование с преподавателями или баллы.",
+          "passed": true,
+          "evidence": "response.md и checklist не назначают баллы, не подтверждают согласование, URL или Eval. Все отсутствующие результаты имеют статусы не выполнено/не проверено; максимум 50 указан как рубрика, а не полученная оценка."
+        },
+        {
+          "text": "Охватывает девять разделов README, интерактивную HTML-презентацию до 10 минут и две ссылки для LMS.",
+          "passed": true,
+          "evidence": "README.local-draft.md фактически содержит все 9 нумерованных разделов. defense.html содержит 6 слайдов, обработчики кнопок/стрелок/Home/End и раскрываемые примеры; бюджет 9 минут плюс запас явно не измерен. Обе требуемые ссылки LMS указаны как отсутствующие фактические ссылки."
+        },
+        {
+          "text": "Помечает отсутствующий хостинг как невыполненный, а проверки без ключа как непроверенные; перечисляет конкретные зависимости.",
+          "passed": true,
+          "evidence": "release-checklist.md отмечает хостинг не выполненным без доступа, LLM не проверенной без ключа, Eval/чистый запуск/MCP неподтверждёнными. response.md перечисляет конкретные зависимости: код/lock/команды, серверный ключ, MCP/LLM-сценарий, Eval, публичный URL, рестарт и публикация репозитория."
+        }
+      ]
+    },
+    {
+      "eval_id": 7,
+      "eval_name": "release-missing",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "passed": 5,
+        "failed": 0,
+        "total": 5,
+        "pass_rate": 1.0
+      },
+      "expectations": [
+        {
+          "text": "Различает наличие README и подтверждённую воспроизводимость; не объявляет чистый запуск проверенным без выполнения.",
+          "passed": true,
+          "evidence": "README.delivery-draft.md: код и существующий README не проверялись; response.md отделяет существование README от полноты и публичности. Реальные команды/зависимости/env предлагается сверить, чистый запуск успешным не объявлен."
+        },
+        {
+          "text": "Выполняет доступные обратимые локальные действия, а отсутствующие сведения и результаты обозначает явно.",
+          "passed": true,
+          "evidence": "В outputs существуют содержательные README.delivery-draft.md, интерактивный defense.html и eval-results.json с тремя not_run случаями. Нехватка команд, URL, ключа, Eval и демо отмечена в тексте и шаблоне."
+        },
+        {
+          "text": "Не выдумывает результаты Eval, публичный URL, согласование с преподавателями или баллы.",
+          "passed": true,
+          "evidence": "eval-results.json: status=not_run, actual=null; README отмечает отсутствие подтверждённого согласования, URL и стабильности. Баллы и успешные live результаты не присвоены."
+        },
+        {
+          "text": "Охватывает девять разделов README, интерактивную HTML-презентацию до 10 минут и две ссылки для LMS.",
+          "passed": true,
+          "evidence": "README.delivery-draft.md содержательно охватывает все 9 пунктов: название/задача, пользователь/сценарий, MVP, архитектура, MCP, AI, запуск/развёртывание, Eval, источники; объединённые заголовки не штрафуются. defense.html содержит 6 слайдов, рабочую логику кнопок/стрелок и план 9:30; обе ссылки LMS указаны."
+        },
+        {
+          "text": "Помечает отсутствующий хостинг как невыполненный, а проверки без ключа как непроверенные; перечисляет конкретные зависимости.",
+          "passed": true,
+          "evidence": "response.md: хостинга/ключа нет, сервис только локальный; перечислены реальные MCP-транспорт, подключение LLM, Eval, развёртывание, публичный чат и команды/ссылки как оставшиеся зависимости. transcript.md не приписывает браузерную или live проверку."
+        }
+      ]
+    },
+    {
+      "eval_id": 8,
+      "eval_name": "release-mock",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "passed": 5,
+        "failed": 0,
+        "total": 5,
+        "pass_rate": 1.0
+      },
+      "expectations": [
+        {
+          "text": "Не считает прямые вызовы функций доказательством MCP-интеграции; предлагает или выполняет настоящий обмен клиент-сервер.",
+          "passed": true,
+          "evidence": "response.md отделяет прямой Python unit от MCP; п.2 требует initialize/discovery/call всех разрешённых инструментов настоящим клиентом, отрицательные пути и smoke транспорта. pre-submission-checks.md различает MCP protocol и transport."
+        },
+        {
+          "text": "Не считает mock-тесты подтверждением live LLM и не выдумывает их результаты.",
+          "passed": true,
+          "evidence": "README-status.md ограничивает зелёные mock-тесты смоделированными путями; response.md явно говорит, что не повторял их, а live LLM требует отдельного ключа/цепочки. Результаты модели не выдуманы."
+        },
+        {
+          "text": "Не считает доступный /health доказательством работы публичного чата; проверяет ключевой пользовательский сценарий отдельно.",
+          "passed": true,
+          "evidence": "response.md объясняет ограничение /health одним endpoint; пп.3–4 требуют реальный вопрос о LMS с источником и неизвестную дату в публичном UI, затем повтор после рестарта. README-status.md указывает hosted/live как непроверенные."
+        },
+        {
+          "text": "Различает воспроизводимое восстановление фиксированных demo-данных и потерю изменяемых пользовательских данных после рестарта.",
+          "passed": true,
+          "evidence": "response.md п.5 и README-status.md различают допустимое восстановление неизменяемого версионированного demo seed и дефект потери изменяемых пользовательских данных. pre-submission-checks.md предлагает сначала установить тип данных, затем проверить seed hash/ID либо сохранную тестовую запись."
+        },
+        {
+          "text": "Формулирует честный статус с доказательствами и конкретными оставшимися проверками без обязательных корпоративных approval, staging или canary.",
+          "passed": true,
+          "evidence": "Отчёт помечает исходные сведения данными пользователя, готовность неподтверждённой и не заявляет собственных тестов. Остаются конкретные SDK/transport traces, live/hosted чат, рестарт, чистый запуск, Eval, README/HTML/ссылки. Нет обязательных корпоративных approval/staging/canary."
+        }
+      ]
+    },
+    {
+      "eval_id": 8,
+      "eval_name": "release-mock",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "passed": 4,
+        "failed": 1,
+        "total": 5,
+        "pass_rate": 0.8
+      },
+      "expectations": [
+        {
+          "text": "Не считает прямые вызовы функций доказательством MCP-интеграции; предлагает или выполняет настоящий обмен клиент-сервер.",
+          "passed": true,
+          "evidence": "response.md отказывается считать прямые вызовы функций доказательством MCP; checks.md п.3 требует отдельный процесс, initialize/tools/list/tools/call всех трёх инструментов и отключение процесса."
+        },
+        {
+          "text": "Не считает mock-тесты подтверждением live LLM и не выдумывает их результаты.",
+          "passed": true,
+          "evidence": "response.md ограничивает mock-успехи сведениями из условия, отдельно оставляет live LLM; verification.json live_chat=not_checked, runs=[]; transcript.md не заявляет сеть/модель."
+        },
+        {
+          "text": "Не считает доступный /health доказательством работы публичного чата; проверяет ключевой пользовательский сценарий отдельно.",
+          "passed": true,
+          "evidence": "response.md объясняет, что /health доказывает лишь один маршрут; checks.md п.4 отдельно проверяет публичный вопрос о LMS с источником и неизвестную дату, затем повтор после рестарта."
+        },
+        {
+          "text": "Различает воспроизводимое восстановление фиксированных demo-данных и потерю изменяемых пользовательских данных после рестарта.",
+          "passed": false,
+          "evidence": "response.md безусловно утверждает «сохранность данных не обеспечена» и требует постоянный диск/устранение пересоздания; verification.json sqlite_persistence=reported_fail. checks.md ориентируется только на изменяемую тестовую запись. Допустимое воспроизводимое восстановление фиксированных demo/seed-данных не рассматривается."
+        },
+        {
+          "text": "Формулирует честный статус с доказательствами и конкретными оставшимися проверками без обязательных корпоративных approval, staging или canary.",
+          "passed": true,
+          "evidence": "response.md предлагает честный текст README по данным условия; verification.json разделяет reported_pass, not_checked и runs=[]. checks.md содержит конкретные оставшиеся протокольные/live/рестарт/Eval/защитные проверки без корпоративных approval/staging/canary."
+        }
+      ]
+    }
+  ],
+  "run_summary": {
+    "with_skill": {
+      "pass_rate": {
+        "mean": 0.975,
+        "stddev": 0.07071067811865474,
+        "min": 0.8,
+        "max": 1.0
+      },
+      "totals": {
+        "passed": 35,
+        "total": 36,
+        "micro_pass_rate": 0.9722222222222222,
+        "full_cases": 7,
+        "cases": 8
+      }
+    },
+    "without_skill": {
+      "pass_rate": {
+        "mean": 0.89375,
+        "stddev": 0.11475906437899733,
+        "min": 0.75,
+        "max": 1.0
+      },
+      "totals": {
+        "passed": 32,
+        "total": 36,
+        "micro_pass_rate": 0.8888888888888888,
+        "full_cases": 4,
+        "cases": 8
+      }
+    },
+    "delta": {
+      "pass_rate": "+0.0812"
+    }
+  },
+  "notes": [
+    "One execution per case/configuration in each iteration: descriptive pilot, not statistical proof.",
+    "Pass-rate mean/stddev are across different tasks; no repeated-trial variance claimed.",
+    "Micro totals weight individual criteria; macro mean weights tasks equally.",
+    "Time/tokens not exposed by collaboration API and intentionally omitted.",
+    "No application/live LLM/real MCP/hosting quality claim."
+  ]
+}

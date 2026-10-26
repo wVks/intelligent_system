@@ -1,0 +1,4 @@
+interface:
+  display_name: "StudyNavigator: MCP"
+  short_description: "MCP-сервер, инструменты и надёжный цикл LLM"
+  default_prompt: "Используй $study-mcp для реализации или проверки MCP-интеграции StudyNavigator с реальными вызовами инструментов и проверкой ошибок."

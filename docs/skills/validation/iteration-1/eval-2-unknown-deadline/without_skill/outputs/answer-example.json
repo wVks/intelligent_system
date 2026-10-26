@@ -1,0 +1,50 @@
+{
+  "status": "needs_clarification",
+  "answer": "Дата защиты в PDF не указана. Пока предлагаю относительный план занятий.",
+  "deadline": null,
+  "daily_minutes": 60,
+  "sources": [
+    {
+      "id": "pdf-p1",
+      "document": "исходный PDF",
+      "page": 1
+    },
+    {
+      "id": "pdf-p2",
+      "document": "исходный PDF",
+      "page": 2
+    }
+  ],
+  "clarification": "На какую дату назначена защита?",
+  "plan": [
+    {
+      "order": 1,
+      "task": "Согласовать задачу и границы MVP; проверить критерии готовности",
+      "minutes": 60,
+      "basis": "recommendation",
+      "source_ref": "pdf-p2"
+    },
+    {
+      "order": 2,
+      "task": "Подготовить проверенные фрагменты PDF с номерами страниц",
+      "minutes": 60,
+      "basis": "recommendation",
+      "source_ref": "pdf-p1"
+    },
+    {
+      "order": 3,
+      "task": "Начать первый срез чата с MCP и подключённой LLM; продолжать отдельными часовыми занятиями",
+      "minutes": 60,
+      "basis": "recommendation",
+      "source_ref": "pdf-p1"
+    },
+    {
+      "order": 4,
+      "task": "После реализации провести Eval, разобрать ошибки, подготовить хостинг и материалы защиты; разбить оставшуюся работу на часовые занятия",
+      "minutes": 60,
+      "basis": "recommendation",
+      "source_ref": "pdf-p1"
+    }
+  ],
+  "plan_note": "Это первая очередь занятий, не оценка общей трудоёмкости и не обещание готовности за четыре дня."
+}
