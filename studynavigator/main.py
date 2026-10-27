@@ -413,21 +413,26 @@ def create_app(settings=None, provider=None, analysis_provider=None):
 
     @app.get("/sources/{source_id}", response_class=HTMLResponse)
     async def source_page(source_id: Identifier, request: Request):
+        from .text_format import render_structured_text
+
         source = store(request).get_source(source_id)
         if source is None:
             raise HTTPException(404, "Источник не найден.")
         title, section = html.escape(source["title"]), html.escape(source.get("section") or "Фрагмент")
-        excerpt = html.escape(source["excerpt"])
+        excerpt = render_structured_text(source["excerpt"])
         page = int(source["page"])
         document_url = html.escape(source.get("document_url") or "/materials/personal-project.pdf", quote=True)
-        body = f"""<!doctype html><html lang="ru"><meta charset="utf-8">
+        body = f"""<!doctype html><html lang="ru"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>{title} — источник StudyNavigator</title><link rel="stylesheet" href="/static/styles.css">
-<main style="max-width:800px;margin:48px auto;padding:24px"><a href="/">← К ассистенту</a>
-<p>Исходный материал · страница {page}</p><h1>{title}</h1><h2>{section}</h2>
-<blockquote style="white-space:pre-wrap;line-height:1.8">{excerpt}</blockquote>
-<p><a href="{document_url}#page={page}" target="_blank" rel="noopener">Открыть страницу {page} исходного PDF ↗</a></p>
-<p>Сверяйте извлечённый текст с оригиналом; интерпретация ассистента не заменяет его требования.</p></main></html>"""
+<title>{title} — источник StudyNavigator</title><link rel="stylesheet" href="/static/styles.css?v=20261027-ui3"></head>
+<body><main id="source-reader" class="source-reader">
+<header class="source-reader-header"><a class="source-back" href="/">← К ассистенту</a>
+<p class="source-meta">Исходный материал · страница {page}</p><h1>{title}</h1>
+<p class="source-section">{section}</p></header>
+<article class="source-content" aria-label="Текст источника"><div class="structured-text">{excerpt}</div></article>
+<footer class="source-reader-footer"><a class="source-pdf-link" href="{document_url}#page={page}" target="_blank" rel="noopener">Открыть страницу {page} исходного PDF ↗</a>
+<p>Сверяйте извлечённый текст с оригиналом; интерпретация ассистента не заменяет его требования.</p></footer>
+</main></body></html>"""
         return HTMLResponse(body)
 
     @app.get("/materials/personal-project.pdf")

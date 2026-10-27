@@ -22,6 +22,11 @@ function element(tag, className, text) {
   return node;
 }
 
+function renderStructuredText(target, text) {
+  if (typeof StudyTextFormat !== "undefined" && typeof StudyTextFormat.render === "function") StudyTextFormat.render(target, text);
+  else target.textContent = String(text ?? "");
+}
+
 function scrollBehavior() { return window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth"; }
 
 function focusSection(id) {
@@ -262,7 +267,11 @@ function sourceCard(source) {
   const heading = element("div", "source-heading");
   heading.append(element("h3", "source-title", source.title || "Учебный материал"), element("span", "source-page", sourceLocation(source)));
   card.append(heading);
-  if (source.excerpt) card.append(element("p", "source-excerpt", source.excerpt));
+  if (source.excerpt) {
+    const excerpt = element("div", "source-excerpt structured-text");
+    renderStructuredText(excerpt, source.excerpt);
+    card.append(excerpt);
+  }
   const links = element("div", "source-links");
   for (const [value, label] of [[source.url, "Открыть фрагмент ↗"], [source.document_url ? `${source.document_url}#page=${source.page || 1}` : null, "Страница PDF ↗"]]) {
     const url = sourceURL(value);
@@ -643,7 +652,8 @@ function showAssignmentMode(assignment) {
   $("materials-panel").hidden = !uploaded;
   $("card-panel").hidden = !uploaded;
   $("chat-panel").hidden = pending;
-  $("context-column").hidden = pending;
+  $("planning").hidden = pending;
+  $("context-column").hidden = pending || uploaded;
   $("sources-panel").hidden = uploaded;
   $("workspace-grid").classList.toggle("is-materials", pending);
   $("workspace-grid").classList.toggle("is-uploaded", uploaded);
@@ -875,7 +885,10 @@ function messageNode(role, text = "", pending = false) {
   const node = element("article", `message message-${role}${pending ? " is-pending" : ""}`);
   const header = element("div", "message-header");
   header.append(element("span", "message-author", role === "user" ? "Вы" : "StudyNavigator"));
-  node.append(header, element("p", "message-content", text));
+  const content = element("div", "message-content structured-text");
+  if (pending) content.textContent = text;
+  else renderStructuredText(content, text);
+  node.append(header, content);
   $("conversation").append(node);
   scrollConversation();
   return node;
@@ -892,7 +905,7 @@ function fillAnswer(node, data) {
   header.append(element("span", `message-mode${live ? " is-live" : ""}`, live ? "LLM" : "Демо · без LLM"));
   const statuses = { needs_clarification: "Нужно уточнение", insufficient_data: "Недостаточно данных", out_of_scope: "Вне материалов", conflict: "Есть противоречие" };
   if (statuses[data.status]) header.append(element("span", "message-status", statuses[data.status]));
-  node.querySelector(".message-content").textContent = data.answer;
+  renderStructuredText(node.querySelector(".message-content"), data.answer);
   const sources = Array.isArray(data.sources) ? data.sources : [];
   if (sources.length) {
     const links = element("div", "response-sources");

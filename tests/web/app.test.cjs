@@ -5,6 +5,7 @@ const vm = require("node:vm");
 const test = require("node:test");
 
 const appSource = fs.readFileSync(process.env.STUDYNAVIGATOR_WEB_APP || path.join(__dirname, "../../web/app.js"), "utf8");
+const formatterSource = fs.readFileSync(path.join(__dirname, "../../web/text-format.js"), "utf8");
 const uploaded = { assignment_id: "upload-a", title: "Работа A", is_uploaded: true, status: "awaiting_analysis", sources: [], documents: [] };
 const seed = { assignment_id: "personal-project", title: "Личный проект", status: "ready", sources: [] };
 const card = {
@@ -14,27 +15,37 @@ const card = {
 };
 
 // A small DOM substitute for state-transition tests; browser checks are separate.
-function harness(fetchResponse, { reducedMotion = false } = {}) {
+function harness(fetchResponse, { reducedMotion = false, formatter = true } = {}) {
   const nodes = new Map();
   const documentListeners = new Map();
   let focused = null;
   function node(id = "") {
     return {
-      id, hidden: true, _disabled: false, value: "", files: [], dataset: {}, children: [], attributes: {}, listeners: {},
+      id, hidden: true, _disabled: false, _text: "", value: "", files: [], dataset: {}, children: [], attributes: {}, listeners: {},
+      get textContent() { return this._text + this.children.map((child) => child.textContent || "").join(""); },
+      set textContent(value) { this._text = String(value); this.children = []; },
       get disabled() { return this._disabled; },
       set disabled(value) { this._disabled = value; if (value && focused === this) focused = document.body; },
       classList: { add() {}, remove() {}, toggle() {} },
       setAttribute(name, value) { this.attributes[name] = value; }, removeAttribute(name) { delete this.attributes[name]; },
       append(...items) { this.children.push(...items); },
-      replaceChildren(...items) { this.children = items; },
+      replaceChildren(...items) { this._text = ""; this.children = items; },
       addEventListener(name, listener) { this.listeners[name] = listener; }, querySelectorAll() { return []; }, reportValidity() { return true; },
+      querySelector(selector) {
+        for (const child of this.children) {
+          if (selector.startsWith(".") && child.className?.split(/\s+/).includes(selector.slice(1))) return child;
+          const match = child.querySelector?.(selector);
+          if (match) return match;
+        }
+        return null;
+      },
       focus() { focused = this; for (const listener of documentListeners.get("focusin") || []) listener({ target: this }); }, scrollIntoView(options) { this.lastScroll = options; },
     };
   }
   const document = {
     body: node("body"),
     getElementById(id) { if (!nodes.has(id)) nodes.set(id, node(id)); return nodes.get(id); },
-    createElement() { return node(); }, createTextNode(text) { return { textContent: text }; },
+    createElement(tagName) { const created = node(); created.tagName = tagName; return created; }, createTextNode(text) { return { textContent: text }; },
     querySelectorAll(selector) { return selector.includes("[data-workflow]") ? workflow : []; },
     get activeElement() { return focused; }, hasFocus() { return true; },
     addEventListener(name, listener) { if (!documentListeners.has(name)) documentListeners.set(name, new Set()); documentListeners.get(name).add(listener); },
@@ -55,7 +66,8 @@ function harness(fetchResponse, { reducedMotion = false } = {}) {
       return { ok: result.status < 400, status: result.status, json: async () => result.body };
     },
   });
-  vm.runInContext(appSource.replace(/initialize\(\);\s*$/, "") + "\nglobalThis.app = { state, selectAssignment, submitUpload, deleteAssignment, confirmCard, submitPlan, updateControls, analyzeCard, showMode, scrollConversation };", context);
+  if (formatter) vm.runInContext(formatterSource, context);
+  vm.runInContext(appSource.replace(/initialize\(\);\s*$/, "") + "\nglobalThis.app = { state, selectAssignment, submitUpload, deleteAssignment, confirmCard, submitPlan, updateControls, analyzeCard, showMode, scrollConversation, sourceCard, renderMaterialResults, messageNode, fillAnswer };", context);
   const app = context.app;
   app.state.status = { mode: "offline" };
   app.state.assignments = [uploaded, seed];
@@ -89,6 +101,73 @@ test("model notice uses a human name without exposing provider URIs", () => {
   }
   app.showMode({ mode: "live", live_configured: true, model: "gpt://private-folder/yandexgpt-5.1/latest" });
   assert.match(app.get("mode-notice").textContent, /YandexGPT 5\.1/);
+});
+
+test("source excerpts and completed AI answers use safe blocks without changing source data or links", () => {
+  const app = harness(unavailable);
+  const source = { source_id: "private-source", page: 2, title: "Требования", excerpt: 'Нужно: ● README • <img src=x onerror="alert(1)">', url: "/sources/private-source", document_url: "/documents/private-document" };
+  const original = JSON.stringify(source);
+  const sourceNode = app.sourceCard(source);
+  const excerpt = sourceNode.querySelector(".source-excerpt");
+  assert.equal(excerpt.tagName, "div");
+  assert.deepEqual(excerpt.children.map((child) => child.tagName), ["p", "ul"]);
+  assert.match(excerpt.children[1].children[1].textContent, /<img src=x onerror=/);
+  assert.equal(sourceNode.querySelector(".source-open").href, "http://localhost/sources/private-source");
+  app.renderMaterialResults([source]);
+  assert.equal(app.get("material-results").children[0].querySelector(".source-excerpt").children[1].tagName, "ul");
+  assert.equal(JSON.stringify(source), original);
+
+  const message = app.messageNode("assistant", "Обрабатываем запрос…", true);
+  const content = message.querySelector(".message-content");
+  assert.equal(content.tagName, "div");
+  assert.equal(content.textContent, "Обрабатываем запрос…");
+  app.fillAnswer(message, { answer: "План:\n\n3. Python 3.12\n5. https://example.test/v1.2", mode: "live", sources: [] });
+  assert.deepEqual(content.children.map((child) => child.tagName), ["p", "ol"]);
+  assert.equal(content.children[1].attributes.start, "3");
+  assert.equal(content.children[1].children[1].attributes.value, "5");
+  assert.doesNotMatch(content.textContent, /Обрабатываем/);
+});
+
+test("the standalone planning panel stays hidden until the selected assignment is confirmed", async () => {
+  let selected = uploaded;
+  const app = harness(() => response(selected));
+  await app.selectAssignment(uploaded.assignment_id, true);
+  assert.equal(app.get("planning").hidden, true);
+  assert.equal(app.get("plan-button").disabled, true);
+  selected = { ...uploaded, status: "ready", card, card_revision: 1 };
+  await app.selectAssignment(uploaded.assignment_id, true);
+  assert.equal(app.get("planning").hidden, false);
+  assert.equal(app.get("context-column").hidden, true, "Uploaded materials already have their own panel");
+  assert.equal(app.get("plan-button").disabled, false);
+  app.state.cardDirty = true;
+  app.updateControls();
+  assert.equal(app.get("plan-button").disabled, true);
+  selected = seed;
+  await app.selectAssignment(seed.assignment_id, true);
+  assert.equal(app.get("context-column").hidden, false, "The prepared example still shows its sources beside chat");
+});
+
+test("user messages keep paragraphs and list items without interpreting embedded HTML", () => {
+  const app = harness(unavailable);
+  const message = app.messageNode("user", "Мой вопрос:\n\n● Первый пункт\n● <img src=x onerror=alert(1)>");
+  const content = message.querySelector(".message-content");
+  assert.deepEqual(content.children.map((node) => node.tagName), ["p", "ul"]);
+  assert.equal(content.children[1].children[1].textContent, "<img src=x onerror=alert(1)>");
+});
+
+test("an unavailable formatter script leaves source and answer text readable without stopping the application", () => {
+  const app = harness(unavailable, { formatter: false });
+  const text = '<script>alert(1)</script> ● Сдать PDF';
+  const source = app.sourceCard({ excerpt: text, url: "/sources/private-source" });
+  const excerpt = source.querySelector(".source-excerpt");
+  assert.equal(excerpt.textContent, text);
+  assert.deepEqual(excerpt.children, []);
+  const message = app.messageNode("assistant", "Ожидаем…", true);
+  app.fillAnswer(message, { answer: text, mode: "live", sources: [] });
+  assert.equal(message.querySelector(".message-content").textContent, text);
+  assert.deepEqual(message.querySelector(".message-content").children, []);
+  app.updateControls();
+  assert.equal(app.get("manual-card-button").disabled, false);
 });
 
 test("manual entry before analysis confirms revision zero with user provenance and no model request", async () => {

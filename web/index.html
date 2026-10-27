@@ -6,8 +6,9 @@
     <meta name="theme-color" content="#001f1e">
     <title>StudyNavigator — учебное пространство</title>
     <meta name="description" content="Требования учебного задания, ответы с источниками и понятный план подготовки.">
-    <link rel="stylesheet" href="/static/styles.css?v=20261027-ui2">
-    <script src="/static/app.js?v=20261027-ui2" defer></script>
+    <link rel="stylesheet" href="/static/styles.css?v=20261027-ui3">
+    <script id="text-format" src="/static/text-format.js?v=20261027-ui3" defer></script>
+    <script src="/static/app.js?v=20261027-ui3" defer></script>
   </head>
   <body>
     <a class="skip-link" href="#workspace">Перейти к рабочему пространству</a>
@@ -194,7 +195,27 @@
             </div>
           </section>
 
-          <aside id="context-column" class="context-column" aria-label="Материалы и подготовка">
+          <section id="planning" class="planning-panel panel" aria-labelledby="plan-title">
+            <div class="panel-heading"><div><p class="eyebrow">03 / Распредели работу</p><h2 id="plan-title">План подготовки</h2></div><span class="plan-icon" aria-hidden="true">↗</span></div>
+            <p id="plan-intro" class="plan-intro">Распределим этапы по доступному времени. Длительности — ориентировочные оценки.</p>
+            <form id="plan-form" class="plan-form">
+              <div id="plan-tasks-editor" class="plan-tasks-editor" hidden>
+                <p class="task-editor-intro">Проверьте минуты и отметьте выполненное. Изменения используются только в этом расчёте.</p>
+                <div id="plan-tasks" class="plan-task-list"></div>
+              </div>
+              <div class="plan-inputs">
+                <label for="plan-days">Дней на подготовку<input id="plan-days" name="days" type="number" min="1" max="30" step="1" value="7" required></label>
+                <label for="plan-minutes">Минут в день<input id="plan-minutes" name="minutes_per_day" type="number" min="15" max="480" step="1" value="60" required></label>
+              </div>
+              <button id="plan-button" class="button button-primary" type="submit" disabled>Составить план <span aria-hidden="true">→</span></button>
+            </form>
+            <p id="plan-error" class="inline-error" role="alert" hidden></p>
+            <p id="plan-stale" class="plan-stale" role="status" hidden>Параметры изменились. Рассчитайте план заново.</p>
+            <div id="plan-result" class="plan-result" aria-live="polite" hidden></div>
+            <p id="plan-footnote" class="plan-footnote">Относительный план по дням. Он не задаёт дату сдачи.</p>
+          </section>
+
+          <aside id="context-column" class="context-column" aria-label="Источники задания">
             <section id="sources-panel" class="sources-panel panel" aria-labelledby="sources-title">
               <div class="panel-heading"><div><p class="eyebrow">Проверь по оригиналу</p><h2 id="sources-title">Источники</h2></div><span id="source-count" class="light-count">—</span></div>
               <div id="sources" class="sources-list"><p class="empty-note">После выбора задания здесь появятся его источники.</p></div>
@@ -202,26 +223,6 @@
                 <summary>Требования и критерии</summary>
                 <div id="requirements"></div>
               </details>
-            </section>
-
-            <section id="planning" class="planning-panel panel" aria-labelledby="plan-title">
-              <div class="panel-heading"><div><p class="eyebrow">03 / Распредели работу</p><h2 id="plan-title">План подготовки</h2></div><span class="plan-icon" aria-hidden="true">↗</span></div>
-              <p id="plan-intro" class="plan-intro">Распределим этапы по доступному времени. Длительности — ориентировочные оценки.</p>
-              <form id="plan-form" class="plan-form">
-                <div id="plan-tasks-editor" class="plan-tasks-editor" hidden>
-                  <p class="task-editor-intro">Проверьте минуты и отметьте выполненное. Изменения используются только в этом расчёте.</p>
-                  <div id="plan-tasks" class="plan-task-list"></div>
-                </div>
-                <div class="plan-inputs">
-                  <label for="plan-days">Дней на подготовку<input id="plan-days" name="days" type="number" min="1" max="30" step="1" value="7" required></label>
-                  <label for="plan-minutes">Минут в день<input id="plan-minutes" name="minutes_per_day" type="number" min="15" max="480" step="1" value="60" required></label>
-                </div>
-                <button id="plan-button" class="button button-primary" type="submit" disabled>Составить план <span aria-hidden="true">→</span></button>
-              </form>
-              <p id="plan-error" class="inline-error" role="alert" hidden></p>
-              <p id="plan-stale" class="plan-stale" role="status" hidden>Параметры изменились. Рассчитайте план заново.</p>
-              <div id="plan-result" class="plan-result" aria-live="polite" hidden></div>
-              <p id="plan-footnote" class="plan-footnote">Относительный план по дням. Он не задаёт дату сдачи.</p>
             </section>
           </aside>
         </div>

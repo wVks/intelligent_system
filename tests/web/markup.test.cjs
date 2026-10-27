@@ -17,3 +17,25 @@ test("the shipped HTML contains the DOM targets and accessible field references 
   const missing = [...new Set(references.filter((id) => !available.has(id)))];
   assert.deepEqual(missing, [], "Missing DOM targets can prevent application startup");
 });
+
+test("planning follows chat as a full-width grid child and the shared text formatter loads before the app", () => {
+  const html = fs.readFileSync(path.resolve(__dirname, "../../web/index.html"), "utf8");
+  const root = { tag: "root", children: [] }, stack = [root], ids = new Map();
+  const voidTags = new Set(["area", "base", "br", "col", "embed", "hr", "img", "input", "link", "meta", "param", "source", "track", "wbr"]);
+  for (const match of html.matchAll(/<(\/?)([a-z][\w:-]*)([^>]*)>/gi)) {
+    const tag = match[2].toLowerCase();
+    if (match[1]) { if (stack.at(-1).tag === tag) stack.pop(); continue; }
+    const id = /\bid="([^"]+)"/.exec(match[3])?.[1];
+    const node = { tag, id, parent: stack.at(-1), children: [] };
+    node.parent.children.push(node);
+    if (id) ids.set(id, node);
+    if (!voidTags.has(tag) && !/\/\s*$/.test(match[3])) stack.push(node);
+  }
+  const grid = ids.get("workspace-grid"), chat = ids.get("chat-panel"), planning = ids.get("planning");
+  assert.equal(chat.parent, grid);
+  assert.equal(planning.parent, grid, "Planning must not remain in the narrow source column");
+  assert.equal(grid.children[grid.children.indexOf(chat) + 1], planning, "Planning follows chat in reading order");
+  assert.equal(ids.get("sources-panel").parent, ids.get("context-column"));
+  const scripts = [...html.matchAll(/<script\b[^>]*\bsrc="([^"]+)"[^>]*>/g)].map((match) => match[1]);
+  assert.deepEqual(scripts.slice(0, 2), ["/static/text-format.js?v=20261027-ui3", "/static/app.js?v=20261027-ui3"]);
+});
