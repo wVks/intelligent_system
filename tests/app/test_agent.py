@@ -3,6 +3,7 @@
 import asyncio
 import copy
 import json
+import logging
 from pathlib import Path
 
 import pytest
@@ -117,6 +118,50 @@ async def test_json_embedded_in_prose_or_other_language_fence_remains_invalid(fo
     with pytest.raises(AgentError) as error:
         await StudyAgent(FixtureGateway(), ScriptedProvider([tool_turn(), turn])).run("Что отправить в LMS?")
     assert error.value.code == "invalid_model_response"
+
+
+@pytest.mark.asyncio
+async def test_invalid_final_diagnostics_are_bounded_and_never_log_untrusted_text(caplog, monkeypatch):
+    canary = "UNTRUSTED_RESPONSE_AND_UNKNOWN_FIELD_CANARY"
+    invalid = {"answer": "", "status": canary, "source_ids": [123],
+               "facts": [{"key": "", "value": canary, "source_id": 123}]}
+    extra = {"answer": canary, "status": "insufficient_data", "source_ids": [], "facts": [],
+             **{f"{canary}_{index}": canary for index in range(12)}}
+    for content, kind in [(canary + " {", "json"), (json.dumps(invalid), "schema"),
+                          (json.dumps(extra), "extra"), ("{}", "missing"), ({canary: canary}, "json_type")]:
+        caplog.clear()
+        provider = ScriptedProvider([{"role": "assistant", "content": content}])
+        provider.preload_assignment = True
+        with caplog.at_level(logging.WARNING, logger="studynavigator"):
+            with pytest.raises(AgentError) as error:
+                await StudyAgent(FixtureGateway(), provider).run("Что отправить в LMS?")
+        assert error.value.code == "invalid_model_response"
+        assert canary not in caplog.text
+        assert len(caplog.records) == 1
+        message = caplog.records[0].getMessage()
+        diagnostics = json.loads(message.removeprefix("model_response_validation errors="))
+        assert all(set(item) == {"type", "field"} for item in diagnostics)
+        if kind in {"json", "json_type"}:
+            assert diagnostics == [{"type": "json_invalid" if kind == "json" else "json_type", "field": "other"}]
+        elif kind == "extra":
+            assert len(diagnostics) == 10
+            assert all(item == {"type": "extra_forbidden", "field": "other"} for item in diagnostics)
+        elif kind == "missing":
+            assert diagnostics == [{"type": "missing", "field": "answer"}, {"type": "missing", "field": "status"}]
+        else:
+            assert {item["field"] for item in diagnostics} == {"answer", "status", "source_ids", "facts"}
+            assert {item["type"] for item in diagnostics} <= {"string_too_short", "literal_error", "string_type"}
+    for exception_type in (ValueError, TypeError):
+        def fail(_):
+            raise exception_type(canary)
+        monkeypatch.setattr("studynavigator.agent.unwrap_json_fence", fail)
+        caplog.clear()
+        with caplog.at_level(logging.WARNING, logger="studynavigator"):
+            with pytest.raises(AgentError) as error:
+                await StudyAgent(FixtureGateway(), ScriptedProvider([tool_turn(), final_turn()])).run("Что отправить в LMS?")
+        assert error.value.code == "invalid_model_response"
+        assert canary not in caplog.text
+        assert [record.getMessage() for record in caplog.records] == ["model_response_parse error_type=" + exception_type.__name__]
 
 
 @pytest.mark.asyncio
