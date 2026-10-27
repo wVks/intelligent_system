@@ -1,0 +1,152 @@
+{
+  "dataset_id": "studynavigator-ui-refresh-v1",
+  "date": "2026-10-27",
+  "timezone": "Europe/Moscow",
+  "implementation_commit": "6fd8bf657ac3ff4541fe881ed4dc24b8c31c1597",
+  "service_url": "https://studynavigator.136-234-76-207.sslip.io",
+  "runtime": {
+    "image_id": "sha256:a8f66f4d6dc3c56a060203e687900a92a927bbdc6d73035f188eb9bc9da00d44",
+    "health": "healthy",
+    "backend_user": "10001:10001",
+    "read_only_root": true,
+    "backend_port_published": false,
+    "source_hashes_match_local_and_served_assets": true
+  },
+  "tests": {
+    "python": {
+      "passed": 310,
+      "seconds": 54.13
+    },
+    "javascript_and_markup": {
+      "passed": 25,
+      "total": 25
+    },
+    "fresh_live": {
+      "run_id": "c4c2fa790052",
+      "setup": "Fresh uploads and live analyses; no replay or synthetic model response.",
+      "summary": {
+        "attempted_cases": 8,
+        "automatic_passed_cases": 8,
+        "manual_rubrics_total": 13,
+        "manual_rubrics_passed": 13,
+        "manual_rubrics_failed": 0,
+        "combined_passed_cases": 8,
+        "combined_failed_cases": 0,
+        "all_predeclared_cases_passed": true,
+        "all_predeclared_rubrics_passed": true,
+        "overall_pass": true
+      },
+      "configuration": {
+        "kind": "fixed_model_roles",
+        "chat_model": "yandexgpt-5.1/latest",
+        "analysis_model": "aliceai-llm-flash",
+        "chat_max_tokens": 1000,
+        "analysis_max_tokens": 2200,
+        "authorized_total_budget_rub": 150,
+        "same_configuration_through_run": true
+      },
+      "cases": [
+        {
+          "id": "seed-unknown",
+          "automatic_passed": true
+        },
+        {
+          "id": "seed-facts",
+          "automatic_passed": true
+        },
+        {
+          "id": "original-analysis",
+          "automatic_passed": true
+        },
+        {
+          "id": "new-analysis",
+          "automatic_passed": true
+        },
+        {
+          "id": "confirmation",
+          "automatic_passed": true
+        },
+        {
+          "id": "planning",
+          "automatic_passed": true
+        },
+        {
+          "id": "private-boundaries",
+          "automatic_passed": true
+        },
+        {
+          "id": "new-chat",
+          "automatic_passed": true
+        }
+      ]
+    },
+    "free_smoke": {
+      "initial": {
+        "passed": 26,
+        "total": 27,
+        "failure": "stale plan check received rate-limit429 after preceding live suite"
+      },
+      "retry_after_rate_limit_window": {
+        "passed": 27,
+        "total": 27,
+        "paid_calls": 0
+      }
+    },
+    "persistence": {
+      "previous_assignments_and_pdf_hashes_unchanged": 4
+    },
+    "served_html_css_js_match_local": true
+  },
+  "budget": {
+    "budget_rub": "150",
+    "actual_cost_rub": "24.8886",
+    "unknown_reserved_rub": "0",
+    "remaining_rub": "125.1114",
+    "attempts": 22,
+    "new_attempts": 5,
+    "new_test_cost_rub": "7.4579",
+    "old_attempts_unchanged": true,
+    "blocked": false,
+    "blocked_reason": null
+  },
+  "visual_scope": {
+    "html_css_visual_verified": false,
+    "browser_rendering_verified": false,
+    "mobile_viewports_verified": false,
+    "complete_keyboard_walkthrough_verified": false,
+    "http_e2e_verified": true,
+    "scope_note": "Это независимое ревью сохранённых HTTPответов/источников. Ранее markup/CSS/JSstaticcontracts прошли отдельно; данный отчёт не доказывает визуальную компоновку или полный browserflow.",
+    "reported_regressions": {
+      "python_passed": 310,
+      "python_seconds": 54.13,
+      "javascript_markup_passed": 25,
+      "served_asset_hashes_match": true,
+      "persistent_fixtures_checked": 4
+    }
+  },
+  "limitations": [
+    "Один свежий прогон восьми известных разработчикам случаев:не скрытый benchmark и не доказательство устойчивого качества>=95%.",
+    "Успех8/8 относится только к этому run/commit/конфигурации. Более ранние провалы остаются в отдельных исторических отчётах.",
+    "310Python/25JS,servedasset/persistence здесь указаны как сообщённые результаты отдельной проверки; заново не запускались при смысловом ревью.",
+    "Неизвестный срок обеспечивается контроллером по metadata; это проверка итогового поведения системы, не сырой модельной неопределённости.",
+    "Визуальный HTML/CSS,360/375px,полная клавиатура и измеренная репетиция защиты этим отчётом не проверены.",
+    "Ledger и расходы не читались/не менялись в этой задаче; root отдельно зафиксирует итоговый расход."
+  ],
+  "notes": [
+    "A single fresh HTTP run is not proof of95percent population quality or a browser UI walkthrough.",
+    "Old failed runs are retained; raw live report remains unchanged with separate semantic review.",
+    "Original grading criteria summarize0and10points but omit intermediate5points; full source remains linked.",
+    "Proposed tasks omit a separate Python packaging step while keeping Python code in the deliverable."
+  ],
+  "artifact_sha256": {
+    "var/ui-refresh-live.json": "090902802b670a676527388a40007dfb0a1046594daff1ea39ac5b88f7ab7b7c",
+    "var/ui-refresh-semantic-review.json": "9a87ee83329171967ecaaf14d50b9d6c6f5e0c0d66d95f8552800b0963020700",
+    "var/ui-refresh-runtime.json": "7dace903b45af60ef5fff4ec8b90b293b4b0871a6ba8441723025d18915fbeb2",
+    "var/ui-refresh-served-assets.json": "2a6d05c21da073cd5ccb68714944e27cfd6c20bad74d870f400a0bd3d3d8b5bb",
+    "var/ui-refresh-persistence.json": "85fe19cc7e29cf183b5897506f2771ccb149604b209d5c9df326ce933b8fd133",
+    "var/ui-refresh-smoke.json": "94dcab7a108afe9ba68c0a7cf03a92bf7a94d94d3b77fadef7a4aa77e853479b",
+    "var/ui-refresh-smoke-retry.json": "7ffd56f13bbbe94f1b360b327256e4b6a3f899fd6b7bac88fa019d8f90b0c58f",
+    "var/ui-refresh-budget-final.json": "b6fce3338efefef64f1047d7c25a2b662f2bab21a821b2cf9e349d45eaf7fdfd"
+  },
+  "private_material_included": false
+}
