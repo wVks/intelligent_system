@@ -8,6 +8,7 @@ tests
 evals
 tools
 var
+presentation
 __pycache__
 *.pyc
 .pytest_cache

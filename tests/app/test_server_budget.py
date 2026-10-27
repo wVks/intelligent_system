@@ -3,6 +3,7 @@
 import asyncio
 import json
 import time
+from decimal import Decimal
 
 import httpx
 import pytest
@@ -56,19 +57,22 @@ def test_budget_config_is_optional_and_reads_only_explicit_environment(monkeypat
     assert configured.live_budget_path == tmp_path / "hosted-budget.json"
 
 
-@pytest.mark.parametrize("budget", [0, -1, 150.01, float("nan"), float("inf"), True])
+@pytest.mark.parametrize("budget", [0, -1, 500.01, float("nan"), float("inf"), True])
 def test_invalid_server_budget_fails_closed(tmp_path, budget):
     with pytest.raises(ValueError):
         settings(tmp_path, live_budget_rub=budget)
 
 
-def test_explicit_150_server_budget_wires_guard_but_is_not_a_default(tmp_path):
+@pytest.mark.parametrize("ceiling", [476.9223, 500])
+def test_explicit_server_budget_up_to_500_wires_guard_but_is_not_a_default(tmp_path, ceiling):
     assert settings(tmp_path).live_budget_rub is None
-    configured = settings(tmp_path, live_budget_rub=150)
+    configured = settings(tmp_path, live_budget_rub=ceiling)
     provider = ChatCompletionsProvider(configured, transport=httpx.MockTransport(response))
     app = create_app(configured, provider=provider)
     assert app.state.live_budget is provider.transport
-    assert app.state.live_budget.summary()["budget_rub"] == 150
+    assert app.state.live_budget.summary()["budget_rub"] == ceiling
+    assert app.state.live_budget.budget == Decimal(str(ceiling))
+    assert Decimal(json.loads(configured.live_budget_path.read_text())["budget_rub"]) == Decimal(str(ceiling))
     with TestClient(app) as client:
         assert client.post("/api/chat", json={"message": "Когда сдавать?",
                                              "assignment_id": "personal-project"}).status_code == 200
@@ -82,7 +86,7 @@ def test_live_eval_cli_still_rejects_above_25_before_loading_credentials(monkeyp
         pytest.fail("Rejected CLI budget must not load credentials or reach a provider")
 
     monkeypatch.setattr(Settings, "from_env", classmethod(forbidden_settings))
-    monkeypatch.setattr("sys.argv", ["run_live_eval.py", "--execute", "--budget-rub", "150"])
+    monkeypatch.setattr("sys.argv", ["run_live_eval.py", "--execute", "--budget-rub", "500"])
     with pytest.raises(SystemExit) as caught:
         main()
     assert caught.value.code == 2

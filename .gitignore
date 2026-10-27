@@ -8,6 +8,7 @@ __pycache__/
 /docs/development-answers.local.md
 /docs/mvp-architecture.local.md
 /var/
+/presentation/
 .pytest_cache/
 .ruff_cache/
 /.coverage

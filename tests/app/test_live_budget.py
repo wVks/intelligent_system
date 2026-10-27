@@ -1,6 +1,7 @@
 import asyncio
 import hashlib
 import json
+from decimal import Decimal
 
 import httpx
 import pytest
@@ -28,8 +29,8 @@ def tokenized(count=80, **overrides):
             "modelVersion": "yagpt-5.1-2025-08", **overrides}
 
 
-@pytest.mark.parametrize("budget", [0, -1, 150.01, float("nan"), float("inf"), True])
-def test_guard_rejects_invalid_or_above_150_budget_without_dispatch(tmp_path, budget):
+@pytest.mark.parametrize("budget", [0, -1, 500.01, float("nan"), float("inf"), True])
+def test_guard_rejects_invalid_or_above_500_budget_without_dispatch(tmp_path, budget):
     with pytest.raises(ProviderError) as caught:
         BudgetTransport(tmp_path / "invalid.json", budget_rub=budget)
     assert caught.value.code == "eval_budget_invalid"
@@ -37,7 +38,8 @@ def test_guard_rejects_invalid_or_above_150_budget_without_dispatch(tmp_path, bu
 
 
 @pytest.mark.asyncio
-async def test_150_requires_explicit_ledger_migration_and_preserves_history_and_unknown_reserve(tmp_path):
+@pytest.mark.parametrize("ceiling", ["476.9223", "500"])
+async def test_server_ceiling_requires_explicit_ledger_migration_and_preserves_history_and_unknown_reserve(tmp_path, ceiling):
     ledger = tmp_path / "ledger.json"
     old_attempts = [
         {"id": 1, "model": "yandexgpt-5.1/latest", "status": "actual", "reserved_rub": "12.0",
@@ -55,20 +57,20 @@ async def test_150_requires_explicit_ledger_migration_and_preserves_history_and_
     ledger.write_text(json.dumps(original))
     before = ledger.read_bytes()
     with pytest.raises(ProviderError) as caught:
-        BudgetTransport(ledger, budget_rub=150)
+        BudgetTransport(ledger, budget_rub=ceiling)
     assert caught.value.code == "eval_budget_invalid"
     assert ledger.read_bytes() == before  # Settings never silently grant or migrate funds.
 
-    extension = {"old_budget_rub": "18.7011", "new_budget_rub": "150", "authorized_total_rub": "150"}
-    migrated = {**original, "budget_rub": "150", "blocked": False, "blocked_reason": None,
+    extension = {"old_budget_rub": "18.7011", "new_budget_rub": ceiling, "authorized_server_ceiling_rub": ceiling}
+    migrated = {**original, "budget_rub": ceiling, "blocked": False, "blocked_reason": None,
                 "budget_extensions": [extension],
                 "reservation_recoveries": [{"previous_reason": original["blocked_reason"],
                                             "last_blocked_request": original["last_blocked_request"]}]}
     ledger.write_text(json.dumps(migrated))  # Simulated audited admin migration, never application code.
-    transport = BudgetTransport(ledger, budget_rub=150, inner=httpx.MockTransport(lambda request: success()))
+    transport = BudgetTransport(ledger, budget_rub=ceiling, inner=httpx.MockTransport(lambda request: success()))
     assert transport.summary()["actual_cost_rub"] == 10
     assert transport.summary()["unknown_reserved_rub"] == 0.5
-    assert transport.summary()["remaining_rub"] == 139.5
+    assert transport.summary()["remaining_rub"] == float(Decimal(ceiling) - Decimal("10.5"))
     async with httpx.AsyncClient(transport=transport) as client:
         assert (await client.post(URL, json=payload())).status_code == 200
     saved = json.loads(ledger.read_text())
@@ -80,9 +82,9 @@ async def test_150_requires_explicit_ledger_migration_and_preserves_history_and_
     assert summary["attempts"] == 3
     assert summary["actual_cost_rub"] == pytest.approx(10.0128)
     assert summary["unknown_reserved_rub"] == 0.5
-    assert summary["remaining_rub"] == pytest.approx(139.4872)
+    assert summary["remaining_rub"] == float(Decimal(ceiling) - Decimal("10.5128"))
     await transport.close()
-    reloaded = BudgetTransport(ledger, budget_rub=150)
+    reloaded = BudgetTransport(ledger, budget_rub=ceiling)
     assert reloaded.summary() == summary
     await reloaded.close()
 

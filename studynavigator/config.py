@@ -39,9 +39,9 @@ class Settings:
             try:
                 budget = float(self.live_budget_rub)
             except (TypeError, ValueError) as exc:
-                raise ValueError("live_budget_rub must be in (0, 150]") from exc
-            if type(self.live_budget_rub) is bool or not math.isfinite(budget) or not 0 < budget <= 150:
-                raise ValueError("live_budget_rub must be in (0, 150]")
+                raise ValueError("live_budget_rub must be in (0, 500]") from exc
+            if type(self.live_budget_rub) is bool or not math.isfinite(budget) or not 0 < budget <= 500:
+                raise ValueError("live_budget_rub must be in (0, 500]")
             object.__setattr__(self, "live_budget_rub", budget)
         if self.mode not in {"offline", "live"}:
             raise ValueError("STUDYNAV_MODE must be offline or live")
