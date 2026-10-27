@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#172d35">
+  <title>StudyNavigator — защита проекта</title>
+  <style>
+    :root{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#21343a;background:#f5f5ef;font-size:17px;line-height:1.55;--ink:#172d35;--teal:#176e62;--line:#dce3d8;--muted:#596b66;--paper:#fffefa}
+    *{box-sizing:border-box}body{margin:0}button,input{font:inherit}a{color:var(--teal);text-underline-offset:.2em}button{cursor:pointer}button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid #3d9983;outline-offset:4px}[hidden]{display:none!important}
+    .shell{max-width:1200px;margin:auto;padding:0 40px}.topbar{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:22px 0;border-bottom:1px solid var(--line)}.brand{font-weight:700;letter-spacing:-.7px;color:var(--ink);text-decoration:none}.brand span{font-weight:400}.top-meta{display:flex;gap:18px;align-items:center;font-size:.76rem;color:var(--muted)}.pill{display:inline-flex;padding:4px 9px;border-radius:5px;background:#e8efe6;color:#405a4b;font-size:.72rem}.pill.pending{background:#f4e8d3;color:#78551d}
+    main{min-height:calc(100vh - 170px)}.slide{padding:54px 0 34px}.eyebrow{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.16em;color:var(--teal);margin:0 0 15px}h1,h2,h3,p,li,code{overflow-wrap:anywhere}h1{font-size:clamp(2.5rem,6vw,4.8rem);font-weight:550;line-height:1.06;letter-spacing:-.06em;margin:0 0 27px;max-width:950px}h2{font-size:clamp(1.8rem,3.5vw,2.85rem);font-weight:550;line-height:1.16;letter-spacing:-.04em;margin:0 0 27px}h3{font-size:1.05rem;line-height:1.35;margin:0 0 10px}.lead{font-size:1.2rem;color:#53685f;max-width:850px;margin:0 0 32px}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}.grid.three{grid-template-columns:repeat(3,minmax(0,1fr))}.card{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:25px}.card p{margin:0;color:var(--muted)}.card ul{padding-left:20px;margin:0;color:var(--muted)}.card li+li{margin-top:9px}.number{font-size:2.8rem;line-height:1.1;font-weight:550;letter-spacing:-.05em;color:var(--teal);display:block;margin-bottom:8px}.caption{font-size:.77rem;color:var(--muted);margin:16px 0}.fine{font-size:.73rem;color:var(--muted)}.emphasis{background:#e8f0e6;border-left:4px solid var(--teal);padding:18px 22px;margin:24px 0 0}.emphasis p{margin:0}.links{display:flex;gap:12px;flex-wrap:wrap;margin-top:28px}.action,button{border:1px solid #c7d5c8;background:var(--paper);color:var(--ink);border-radius:7px;padding:10px 15px;min-height:44px}.action{display:inline-flex;align-items:center;text-decoration:none}.action.primary,button.primary{background:var(--teal);border-color:var(--teal);color:white}.action:hover,button:hover{filter:brightness(.96)}button[aria-pressed="true"]{background:var(--teal);border-color:var(--teal);color:white}button:disabled{opacity:.4;cursor:default}
+    .journey{list-style:none;padding:0;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;margin:0}.journey li{padding:19px 15px;background:var(--paper);border:1px solid var(--line);border-radius:10px}.journey b{display:block;margin-bottom:9px}.journey span{font-size:.79rem;color:var(--muted)}.step{display:block;font-size:.68rem;color:var(--teal);margin-bottom:16px}.architecture{display:grid;grid-template-columns:minmax(0,1fr) 32px minmax(0,1.1fr) 32px minmax(0,1fr);align-items:center;gap:8px;margin-top:22px}.node{background:var(--paper);border:1px solid var(--line);border-radius:9px;padding:20px;text-align:center}.node strong{display:block}.node small{color:var(--muted)}.arrow{text-align:center;color:var(--teal);font-size:1.5rem}.architecture-secondary{max-width:420px;margin:13px auto 24px;text-align:center;background:#e8f0e6;padding:13px;border-radius:7px;font-size:.8rem}.tool-list{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.tool-list div{border-top:2px solid #b4ccba;padding-top:14px}.tool-list code{display:block;color:var(--teal);font-size:.85rem;font-weight:600}.tool-list p{font-size:.79rem;margin:6px 0;color:var(--muted)}.controls{display:flex;gap:9px;flex-wrap:wrap;margin:0 0 18px}pre{background:var(--ink);color:#dbece0;border-radius:10px;padding:22px;font-size:.73rem;line-height:1.7;white-space:pre-wrap;overflow-wrap:anywhere;margin:0}.answer{border:1px solid #b7cdb6;background:#eef4e9;padding:23px;border-radius:10px}.answer h3{color:var(--teal)}.answer p{margin:0}.demo-label{font-size:.73rem;color:var(--muted);margin:12px 0}.budget-label{display:flex;justify-content:space-between;gap:15px;font-size:.9rem;margin-bottom:10px}input[type="range"]{width:100%;accent-color:var(--teal);min-height:44px}.plan-result{padding:20px 0 0;margin-top:15px;border-top:1px solid var(--line)}.plan-result strong{font-size:1.4rem;color:var(--teal)}.quality{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px}.quality .card{padding:20px}.quality .number{font-size:2rem}.error-panel{margin-top:24px}.error-panel p{margin:0}.status-list{display:grid;gap:13px;margin:0;padding-left:22px}.status-list li{padding-left:3px}.timing{font-size:.76rem;color:var(--muted);margin-top:24px}.speaker{margin-top:24px;border-top:1px solid var(--line);padding-top:12px;font-size:.78rem;color:var(--muted)}.speaker summary{cursor:pointer}.speaker p{margin:10px 0}
+    footer{position:sticky;bottom:0;background:#f5f5efed;backdrop-filter:blur(8px);border-top:1px solid var(--line);padding:14px 0}.navigation{display:flex;justify-content:space-between;align-items:center;gap:18px}.nav-buttons{display:flex;gap:8px;align-items:center}.dots{display:flex;gap:7px}.dot{min-height:16px;width:16px;padding:0;border-radius:50%;background:#d8e2d5;border:0}.dot[aria-current="step"]{background:var(--teal)}.count{font-variant-numeric:tabular-nums;font-size:.8rem;color:var(--muted);min-width:38px;text-align:center}.keyboard{font-size:.7rem;color:var(--muted)}.skip{position:absolute;left:20px;top:-80px;z-index:5;background:white;padding:10px}.skip:focus{top:10px}
+    @media(max-width:760px){:root{font-size:16px}.shell{padding:0 20px}.topbar{padding:17px 0}.top-meta{gap:10px}.top-meta .date{display:none}.slide{padding:34px 0 25px}.grid,.grid.three{grid-template-columns:1fr}.journey{grid-template-columns:1fr}.journey li{padding:15px 18px}.journey b{margin-bottom:4px}.step{display:inline-block;margin:0 12px 0 0}.architecture{grid-template-columns:1fr}.arrow{transform:rotate(90deg)}.tool-list{grid-template-columns:1fr}.quality{grid-template-columns:repeat(2,minmax(0,1fr))}.navigation{gap:8px}.keyboard,.dots{display:none}.nav-buttons{width:100%;justify-content:space-between}.card{padding:21px}.lead{font-size:1.08rem}h1{font-size:2.8rem}.top-meta{font-size:.7rem}.budget-label{flex-direction:column;gap:3px}}
+    @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}@media print{.slide[hidden]{display:block!important}.slide{break-after:page;padding-top:20px}footer,.top-meta,.controls,.links,.speaker{display:none}.shell{max-width:none;padding:0}main{min-height:0}h1{font-size:40px}h2{font-size:30px}.card,pre{break-inside:avoid}body{background:white}}
+  </style>
+</head>
+<body>
+<a class="skip" href="#slides">Перейти к презентации</a>
+<div class="shell">
+  <header class="topbar"><a class="brand" href="#slide-1">Study<span>Navigator</span></a><div class="top-meta"><span class="date">27 октября 2026</span><span class="pill">Учебный MVP</span></div></header>
+  <main id="slides" aria-label="Презентация проекта">
+    <article class="slide" id="slide-1" aria-labelledby="title-1">
+      <p class="eyebrow">01 / Задача</p><h1 id="title-1" tabindex="-1">От PDF задания<br>к понятному маршруту.</h1>
+      <p class="lead">StudyNavigator помогает студенту понять требования, проверить источники и распределить работу по доступному времени.</p>
+      <div class="grid"><div class="card"><h3>Вход</h3><p>Учебное задание в PDF. В нём требования, критерии и иногда срок — всё вперемешку.</p></div><div class="card"><h3>Результат</h3><p>Подтверждённая карточка задания, последовательный план и чат со ссылками на конкретные страницы.</p></div></div>
+      <p class="timing">План показа — около 8 минут, с запасом до 10. Полный хронометраж защиты ещё не измерен.</p>
+      <div class="links"><a class="action primary" href="https://studynavigator.136-234-76-207.sslip.io/" target="_blank" rel="noopener noreferrer">Открыть приложение ↗</a><a class="action" href="https://github.com/wVks/intelligent_system" target="_blank" rel="noopener noreferrer">Код и README ↗</a></div>
+      <details class="speaker"><summary>План выступления · 40 секунд</summary><p>Пользователь — студент, который получил задание и хочет понять, что сдавать и с чего начать. Пользу проверяем через конкретный путь и первоисточники.</p></details>
+    </article>
+    <article class="slide" id="slide-2" aria-labelledby="title-2">
+      <p class="eyebrow">02 / Пользовательский путь</p><h2 id="title-2" tabindex="-1">Студент подтверждает смысл.<br>Код проверяет ограничения.</h2>
+      <ol class="journey"><li><small class="step">01</small><b>Загрузить PDF</b><span>Извлечь текст и сохранить страницы оригинала.</span></li><li><small class="step">02</small><b>Проверить карточку</b><span>LLM выделяет цель, результат, требования и критерии.</span></li><li><small class="step">03</small><b>Подтвердить</b><span>Исправления студента отмечаются как его ввод.</span></li><li><small class="step">04</small><b>Рассчитать план</b><span>Минуты, выполненные задачи и явный дефицит времени.</span></li><li><small class="step">05</small><b>Уточнить в чате</b><span>Ответ → подтверждающий фрагмент → страница PDF.</span></li></ol>
+      <div class="emphasis"><p>Неизвестный срок остаётся неизвестным. Модельная оценка времени не становится требованием преподавателя.</p></div>
+      <details class="speaker"><summary>План выступления · 1 минута</summary><p>Показать в приложении карточку и источник. Если живой сервис ещё не проверен, прямо назвать статус; локальные иллюстрации этой презентации не являются live-демо.</p></details>
+    </article>
+    <article class="slide" id="slide-3" aria-labelledby="title-3">
+      <p class="eyebrow">03 / Границы MVP</p><h2 id="title-3" tabindex="-1">Один комплект материалов.<br>Один рабочий сценарий.</h2>
+      <div class="grid"><div class="card"><h3>Реализованный объём</h3><ul><li>1–3 текстовых PDF, до 10 МиБ и 16 000 символов текста.</li><li>Постраничные источники, SQLite FTS5 и сохранённый оригинал.</li><li>Карточка с происхождением сведений, подтверждение и правки.</li><li>План в целых минутах, чат, удаление своего задания.</li></ul></div><div class="card"><h3>Ограничения первой версии</h3><ul><li>Сканы и OCR не поддерживаются.</li><li>Браузерная сессия без аккаунта и восстановления доступа.</li><li>Нет интеграции с LMS или календарём.</li><li>Оценки задач требуют проверки; личный прогресс не синхронизируется.</li></ul></div></div>
+      <details class="speaker"><summary>План выступления · 45 секунд</summary><p>Объяснить, почему для такого объёма выбран SQLite и простой веб-интерфейс. Границы сдерживают стоимость разработки и проверки.</p></details>
+    </article>
+    <article class="slide" id="slide-4" aria-labelledby="title-4">
+      <p class="eyebrow">04 / Архитектура и MCP</p><h2 id="title-4" tabindex="-1">Собственный сервер инструментов.<br>Источники приходят через протокол.</h2>
+      <div class="architecture" role="img" aria-label="Браузер обращается к FastAPI и ограниченному агенту. MCP-клиент агента общается по stdio с собственным MCP-сервером, который читает SQLite, поиск FTS5 и источники PDF."><div class="node"><strong>Браузер</strong><small>HTML · CSS · JavaScript</small></div><span class="arrow" aria-hidden="true">→</span><div class="node"><strong>FastAPI + агент</strong><small>Валидация · пределы · MCP-клиент</small></div><span class="arrow" aria-hidden="true">⇄</span><div class="node"><strong>MCP-сервер · stdio</strong><small>SQLite · FTS5 · страницы PDF</small></div></div>
+      <div class="architecture-secondary">Yandex AI Studio · фиксированные роли<br>Чат: YandexGPT Pro 5.1 · до 1000 токенов<br>Разбор PDF: Alice AI LLM Flash · до 2200 токенов</div>
+      <div class="tool-list"><div><code>list_assignments</code><p>Доступные задания текущей сессии.</p></div><div><code>get_assignment</code><p>Карточка, метаданные и разрешённые источники выбранного задания.</p></div><div><code>search_materials</code><p>Фрагменты конкретного задания с ID, страницей и выдержкой.</p></div></div>
+      <p class="caption">Первое выбранное задание подгружает контроллер через MCP. Дальнейший поиск выбирает LLM. Доступ к чужому workspace отклоняется на сервере.</p>
+      <details class="speaker"><summary>План выступления · 1 минута 10 секунд</summary><p>Различить LLM, MCP-клиент и собственный MCP-сервер. Ключ остаётся на backend. Модель не выполняет SQL и не выбирает произвольные файловые пути.</p></details>
+    </article>
+    <article class="slide" id="slide-5" aria-labelledby="title-5">
+      <p class="eyebrow">05 / Проверяемый ответ</p><h2 id="title-5" tabindex="-1">Источник — рядом с утверждением.</h2>
+      <div class="controls" aria-label="Выбрать объясняемый сценарий"><button type="button" data-scenario="known" aria-pressed="true">Что отправить в LMS?</button><button type="button" data-scenario="unknown" aria-pressed="false">Когда сдавать?</button></div>
+      <div class="grid"><div><pre id="mcp-example" aria-label="Иллюстрация данных MCP"></pre><p class="demo-label">Локальная иллюстрация реального контракта. Нажатия не вызывают API и не расходуют токены.</p></div><div class="answer" aria-live="polite"><h3 id="example-title"></h3><p id="example-answer"></p><p class="caption" id="example-source"></p></div></div>
+      <details class="speaker"><summary>План выступления · 1 минута 10 секунд</summary><p>Переключить известный факт и неизвестный срок. В фактической реализации отсутствие даты канонически обрабатывает код после получения метаданных; это защита, а не доказательство, что модель всегда сама признаёт незнание.</p></details>
+    </article>
+    <article class="slide" id="slide-6" aria-labelledby="title-6">
+      <p class="eyebrow">06 / Детерминированный план</p><h2 id="title-6" tabindex="-1">Пять часов работы<br>не помещаются в два часа.</h2>
+      <div class="grid"><div class="card"><h3>Измени доступное время</h3><label class="budget-label" for="available-minutes"><span>Бюджет одного дня</span><output id="budget-value" for="available-minutes">120 минут</output></label><input id="available-minutes" type="range" min="15" max="480" step="15" value="120"><p>Оставшаяся задача: <b>300 минут</b>. Завершённые задачи исключены.</p><div class="plan-result" aria-live="polite"><strong id="plan-summary"></strong><p id="plan-detail"></p></div></div><div class="card"><h3>Кто за что отвечает</h3><ul><li>LLM предлагает последовательные задачи.</li><li>Студент проверяет минуты и отмечает выполненное.</li><li>Код считает вместимость и дефицит.</li><li>Все задачи завершены → 0 минут и пустое расписание.</li></ul></div></div>
+      <p class="demo-label">Локальный арифметический пример без обращения к модели. Фактическая API-проверка сценария 300 − 120 = 180 прошла на этапе 5.</p>
+      <details class="speaker"><summary>План выступления · 1 минута</summary><p>Изменить ползунок клавишами стрелок. Показать, что арифметика вынесена из модели и даёт проверяемый результат.</p></details>
+    </article>
+    <article class="slide" id="slide-7" aria-labelledby="title-7">
+      <p class="eyebrow">07 / Реальная проверка и ошибки</p><h2 id="title-7" tabindex="-1">Проверяли поведение.<br>Сохранили и неудачные ответы.</h2>
+      <div class="quality"><div class="card"><strong class="number">279</strong><p>Python-тестов</p></div><div class="card"><strong class="number">9 / 9</strong><p>JS-проверки приложения</p></div><div class="card"><strong class="number">30 / 30</strong><p>Offline-случаев</p></div><div class="card"><strong class="number">23,08 ₽</strong><p>Этап 5: точно 23,0777 ₽</p></div></div>
+      <p class="caption">Этап 5: 8/8 последних случаев только в смешанном наборе моделей и версий; Pro 7/8, Flash 1/1. В истории 8/13 строгих успехов; чат повторялся с восстановленной карточкой. Этап 6: свежий hosted Flash — 5/8; фиксированные Pro-чат + Flash-анализ — 7/8. Приёмка чата нового задания не завершена. Целевое качество ≥95% не подтверждено.</p>
+      <div class="controls" aria-label="Разбор фактической ошибки"><button type="button" data-error="hosted" aria-pressed="true">Текущий блокер</button><button type="button" data-error="fence" aria-pressed="false">Формат</button><button type="button" data-error="provenance" aria-pressed="false">Минуты</button><button type="button" data-error="sources" aria-pressed="false">Источники</button><button type="button" data-error="facts" aria-pressed="false">Typed facts</button><button type="button" data-error="coverage" aria-pressed="false">Полнота</button></div>
+      <div class="card error-panel" aria-live="polite"><h3 id="error-title"></h3><p id="error-detail"></p></div>
+      <div class="links"><a class="action" href="https://github.com/wVks/intelligent_system/blob/main/docs/validation/stage-5.md" target="_blank" rel="noopener noreferrer">Отчёт и ограничения ↗</a></div>
+      <details class="speaker"><summary>План выступления · 1 минута 10 секунд</summary><p>Выбрать одну ошибку и объяснить исправление с регрессией. 13 генераций включают smoke; 13 попыток диагностических случаев — другое число, совпавшее случайно. Расчёт токенов не является сверенным счётом Billing.</p></details>
+    </article>
+    <article class="slide" id="slide-8" aria-labelledby="title-8">
+      <p class="eyebrow">08 / Воспроизводимость и сдача</p><h2 id="title-8" tabindex="-1">Код, доказательства<br>и две ссылки для проверки.</h2>
+      <div class="grid"><div class="card"><h3>Что доступно проверяющему</h3><ul class="status-list"><li>README с запуском и границами MVP.</li><li>Собственный MCP и зафиксированные зависимости.</li><li>Манифест Eval, история ошибок и обезличенные результаты.</li><li>Эта HTML-презентация с клавиатурной навигацией.</li></ul></div><div class="card"><span class="pill pending" id="hosting-state">HTTPS развёрнут · приёмка частичная</span><h3 style="margin-top:15px">Статус публичного сервиса</h3><p id="hosting-detail">Бесплатный hosted HTTP smoke: 27/27; ещё 7 проверок TLS, секретов, сообщений и страницы 2. Живой чат нового задания пока возвращает ошибку. Полный успешный E2E на финальных настройках не подтверждён.</p><p class="caption">Этап 6: 14 генераций, расчёт 13,7011 ₽ из лимита 15 ₽. Новых платных запросов после остановки не было. Последнее уточнение prompt прошло 28 unit-проверок, но в live не проверено.</p></div></div>
+      <p class="caption">Браузерная приёмка заблокирована ошибкой cgWindowNotFound в Chrome/Safari даже после reset; IAB недоступен. HTTP-проверки не заменяют проверку экрана и клавиатуры. Полный хронометраж защиты пока не измерен. Сохранность после рестарта и восстановление backup проверяются отдельно.</p>
+      <div class="links"><a class="action primary" href="https://studynavigator.136-234-76-207.sslip.io/" target="_blank" rel="noopener noreferrer">Сервис ↗</a><a class="action" href="https://github.com/wVks/intelligent_system" target="_blank" rel="noopener noreferrer">Репозиторий ↗</a><a class="action" href="https://studynavigator.136-234-76-207.sslip.io/materials/personal-project.pdf" target="_blank" rel="noopener noreferrer">Исходное задание ↗</a></div>
+      <details class="speaker"><summary>План выступления · 1 минута</summary><p>Открыть сервис и показать только фактически проверенный путь. Для LMS нужны ссылка на репозиторий с README/HTML и ссылка на работающий сервис. Согласование темы с преподавателем отдельно не подтверждено.</p></details>
+    </article>
+  </main>
+  <footer><nav class="navigation" aria-label="Навигация по презентации"><div class="nav-buttons"><button type="button" id="previous" aria-label="Предыдущий слайд">← Назад</button><span class="count" id="slide-count" role="status" aria-live="polite"></span><button type="button" id="next" class="primary" aria-label="Следующий слайд">Далее →</button></div><div class="dots" id="slide-dots" aria-label="Выбрать слайд"></div><span class="keyboard">← → · Home · End</span></nav></footer>
+</div>
+<script>
+"use strict";
+const slides = Array.from(document.querySelectorAll(".slide"));
+const dots = document.getElementById("slide-dots");
+let current = 0;
+slides.forEach((slide, index) => {
+  const button = document.createElement("button");
+  button.type = "button"; button.className = "dot";
+  button.setAttribute("aria-label", `Слайд ${index + 1}: ${slide.querySelector("h1,h2").textContent}`);
+  button.addEventListener("click", () => showSlide(index)); dots.append(button);
+});
+function showSlide(index, focus = true) {
+  current = Math.max(0, Math.min(slides.length - 1, index));
+  slides.forEach((slide, position) => { slide.hidden = position !== current; });
+  Array.from(dots.children).forEach((button, position) => { button.setAttribute("aria-current", position === current ? "step" : "false"); });
+  document.getElementById("slide-count").textContent = `${current + 1} / ${slides.length}`;
+  document.getElementById("previous").disabled = current === 0;
+  document.getElementById("next").disabled = current === slides.length - 1;
+  if (focus) { slides[current].querySelector("h1,h2").focus({preventScroll:true}); window.scrollTo({top:0,behavior:"auto"}); }
+  try { history.replaceState(null,"",`#slide-${current + 1}`); } catch (_) { /* File previews still have working controls. */ }
+}
+document.getElementById("previous").addEventListener("click", () => showSlide(current - 1));
+document.getElementById("next").addEventListener("click", () => showSlide(current + 1));
+document.addEventListener("keydown", (event) => {
+  if (event.altKey || event.ctrlKey || event.metaKey || /^(INPUT|TEXTAREA|SELECT)$/.test(event.target.tagName) || event.target.isContentEditable) return;
+  const targets = {ArrowRight:current + 1,ArrowLeft:current - 1,Home:0,End:slides.length - 1};
+  if (Object.hasOwn(targets,event.key)) { event.preventDefault(); showSlide(targets[event.key]); }
+});
+document.querySelector(".brand").addEventListener("click", event => { event.preventDefault(); showSlide(0); });
+const scenarios = {
+  known:{title:"Две ссылки для LMS",answer:"Отправьте ссылку на публичный репозиторий с README и интерактивной HTML-презентацией, а также ссылку на работающий сервис.",source:"Подтверждение: исходное задание, страница 1.",trace:[{tool:"get_assignment",arguments:{assignment_id:"personal-project"},initiator:"application"},{tool:"search_materials",arguments:{query:"LMS",assignment_id:"personal-project",limit:3},initiator:"model"},{source_id:"personal-project-p1",page:1,excerpt:"Загрузить в LMS: ссылку на публичный репозиторий… ссылку на работающий сервис…"}]},
+  unknown:{title:"Срок не указан",answer:"В исходном задании дата сдачи не указана. Уточните дату у преподавателя. Можно составить относительный план подготовки.",source:"Основание: метаданные выбранного задания, due_date=null и due_at=null. Конкретная дата не выводится из текущего дня.",trace:[{tool:"get_assignment",arguments:{assignment_id:"personal-project"},initiator:"application"},{assignment_id:"personal-project",due_date:null,due_at:null},{status:"insufficient_data",source_ids:[],facts:[]}]}
+};
+function showScenario(name) {
+  const value = scenarios[name]; document.getElementById("mcp-example").textContent = JSON.stringify(value.trace,null,2);
+  document.getElementById("example-title").textContent=value.title; document.getElementById("example-answer").textContent=value.answer; document.getElementById("example-source").textContent=value.source;
+  document.querySelectorAll("[data-scenario]").forEach(button => button.setAttribute("aria-pressed",String(button.dataset.scenario === name)));
+}
+document.querySelectorAll("[data-scenario]").forEach(button => button.addEventListener("click",() => showScenario(button.dataset.scenario)));
+const errors = {
+  hosted:["Чат нового задания ещё не прошёл финальную приёмку","Свежий hosted-прогон фиксированных ролей Pro-чат + Flash-анализ прошёл 7/8: чат отклонён с unsupported_fact. После явного реестра facts точечный повтор дал HTTP 503 invalid_model_response. Последнее уточнение полного JSON-контракта прошло unit-проверки, но нового live-подтверждения нет. Бюджет остановлен на 13,7011 ₽ из 15 ₽."],
+  fence:["Корректный JSON, неудобная обёртка","Первый ответ о неизвестной дате был верным по смыслу, но пустой code fence вызвал HTTP 503. Добавлена строгая обработка полной fence-обёртки; повтор прошёл."],
+  provenance:["Предположение не должно становиться фактом","Модель снабдила оценочные минуты ссылками на документ. Валидатор отклонил карточку. Уточнён prompt: estimate → source_ids=[]. Защитная проверка сохранена."],
+  sources:["Существующая ссылка может быть неверной","Карточка «Демо» ссылалась на соседний фрагмент. Введены короткие ID, затем отдельно проверена поддержка утверждений цитатами. Простого существования ID недостаточно."],
+  facts:["Новый ключ requirements не является каноническим фактом","Правильное пояснение CSV было отклонено из-за придуманного typed fact. Для uploaded-контекста уточнено facts=[]; повтор чата прошёл с прежней карточкой как явной подготовкой."],
+  coverage:["AI-логика не раскрывает обязательную подключённую LLM","Pro 5.1 упустила это явное условие в последней карточке. Один анализ Flash на том же PDF и prompt сохранил его. Это полезное наблюдение, но ещё не сравнение общего качества моделей."]
+};
+function showError(name) { document.getElementById("error-title").textContent=errors[name][0]; document.getElementById("error-detail").textContent=errors[name][1]; document.querySelectorAll("[data-error]").forEach(button=>button.setAttribute("aria-pressed",String(button.dataset.error === name))); }
+document.querySelectorAll("[data-error]").forEach(button=>button.addEventListener("click",()=>showError(button.dataset.error)));
+const budget = document.getElementById("available-minutes");
+function showPlan() { const available=Number(budget.value),deficit=Math.max(0,300-available); document.getElementById("budget-value").textContent=`${available} минут`; document.getElementById("plan-summary").textContent=deficit ? `Не хватает ${deficit} минут` : "План укладывается"; document.getElementById("plan-detail").textContent=`Нужно 300 минут · доступно ${available} · назначено ${Math.min(300,available)}.`; }
+budget.addEventListener("input",showPlan);
+showScenario("known"); showError("hosted"); showPlan();
+const match = /^#slide-(\d+)$/.exec(location.hash); showSlide(match ? Number(match[1])-1 : 0,false);
+</script>
+</body>
+</html>

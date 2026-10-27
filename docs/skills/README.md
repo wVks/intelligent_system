@@ -44,4 +44,5 @@ python3 -m unittest discover -s tests/skills -v
 Сценарии, snapshots, результаты независимых исполнителей и сравнения:
 [validation](validation/).
 Итоговая методика и результаты: [отчёт](validation/report.md).
-Результаты проверки skills не являются Eval ещё не созданного StudyNavigator.
+Результаты проверки skills относятся к навыкам разработки. Проверки самого
+приложения описаны отдельно в [отчёте первого среза](../validation/first-slice.md).

@@ -1,0 +1,76 @@
+name: studynavigator
+
+services:
+  app:
+    image: studynavigator:local
+    build: .
+    env_file:
+      - ${STUDYNAV_ENV_FILE:-/opt/studynavigator/server.env}
+    environment:
+      HOST: 0.0.0.0
+      PORT: "8000"
+      FORWARDED_ALLOW_IPS: 172.30.43.2
+      STUDYNAV_DB_PATH: /app/var/study.db
+      STUDYNAV_UPLOADS_PATH: /app/var/uploads
+    init: true
+    restart: unless-stopped
+    stop_grace_period: 100s
+    read_only: true
+    tmpfs:
+      - /tmp:size=64m,mode=1777
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    volumes:
+      - app_data:/app/var
+    networks:
+      backend:
+        ipv4_address: 172.30.43.3
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=3).read()"]
+      interval: 30s
+      timeout: 5s
+      start_period: 30s
+      retries: 3
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  caddy:
+    image: caddy:2-alpine@sha256:eb4d35b7452d1ab6171fbdbe8d9275b2301dad6dad92115d91e19fb9b24d510f
+    environment:
+      DOMAIN: ${DOMAIN:-studynavigator.136-234-76-207.sslip.io}
+    restart: unless-stopped
+    depends_on:
+      app:
+        condition: service_healthy
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    networks:
+      backend:
+        ipv4_address: 172.30.43.2
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+networks:
+  backend:
+    ipam:
+      config:
+        - subnet: 172.30.43.0/28
+
+volumes:
+  app_data:
+  caddy_data:
+  caddy_config:

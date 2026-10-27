@@ -1,0 +1,14 @@
+.git
+.agents
+.venv
+.env
+.env.*
+docs
+tests
+evals
+tools
+var
+__pycache__
+*.pyc
+.pytest_cache
+.DS_Store

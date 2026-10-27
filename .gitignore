@@ -5,3 +5,10 @@ __pycache__/
 .env.*
 !.env.example
 .DS_Store
+/docs/development-answers.local.md
+/docs/mvp-architecture.local.md
+/var/
+.pytest_cache/
+.ruff_cache/
+/.coverage
+/htmlcov/

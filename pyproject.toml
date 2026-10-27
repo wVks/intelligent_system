@@ -1,0 +1,26 @@
+[project]
+name = "studynavigator"
+version = "0.1.0"
+description = "Grounded study assistant with a real MCP integration"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+  "fastapi==0.162.0",
+  "httpx==0.28.1",
+  "jsonschema==4.26.0",
+  "mcp==2.3.0",
+  "pydantic==2.14.1",
+  "pypdf==6.21.2",
+  "python-multipart==0.0.32",
+  "uvicorn==0.54.0",
+]
+
+[project.optional-dependencies]
+dev = ["pytest==9.1.1", "pytest-asyncio==1.4.1"]
+
+[tool.uv]
+package = false
+
+[tool.pytest.ini_options]
+testpaths = ["tests/app"]
+asyncio_mode = "auto"
+addopts = "-ra"

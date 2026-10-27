@@ -27,7 +27,7 @@
 | --- | --- | --- |
 | `list_assignments` | Необязательный `course_id` | `assignments`: массив кратких записей (`assignment_id`, `course_id`, `title`, `due_at`, `due_date`, `source_ids`) |
 | `get_assignment` | Обязательный `assignment_id` | `assignment`: запись с требованиями, критериями, известными сроками, `source_ids` и каталогом `sources` |
-| `search_materials` | Непустой `query`, необязательный `limit` | `matches`: массив фрагментов с `assignment_id`, `source_id`, `title`, `page`, `section`, `excerpt`, `url` |
+| `search_materials` | Непустой `query`, необязательные `limit` и `assignment_id` | `matches`: массив фрагментов с `assignment_id`, `source_id`, `title`, `page`, `section`, `excerpt`, `url` |
 
 Рекомендуемые исходные ограничения: `query` до 500 символов; `limit` по умолчанию
 5 и допустимый диапазон 1–10. Подстрой их под фактические материалы и бюджет

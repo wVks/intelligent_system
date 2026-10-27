@@ -1,0 +1,314 @@
+{
+  "version": "personal-project-v1",
+  "document": {
+    "filename": "Личный проект.pdf",
+    "sha256": "deaa77f98566f723cbf30f7dbd0aac05d2a0f524cb468c1edf254213e0b6a722",
+    "pages": 3,
+    "source_version": "personal-project-v1",
+    "imported_at": "2026-10-26",
+    "document_date": null
+  },
+  "course": {
+    "course_id": "personal-project-course",
+    "title": "Личный проект",
+    "demo": false
+  },
+  "assignment": {
+    "assignment_id": "personal-project",
+    "course_id": "personal-project-course",
+    "title": "Личный проект: интеллектуальная система",
+    "description": "Создать работающую интеллектуальную систему с LLM и MCP, развернуть сервис и защитить проект.",
+    "due_date": null,
+    "due_at": null,
+    "demo": false,
+    "source_ids": [
+      "personal-project-p1",
+      "personal-project-readme-p1",
+      "personal-project-implementation-p1",
+      "personal-project-p2",
+      "personal-project-task-p2",
+      "personal-project-mcp-p2",
+      "personal-project-hosting-p2",
+      "personal-project-eval-p2",
+      "personal-project-demo-p2",
+      "personal-project-p3"
+    ],
+    "requirements": [
+      {
+        "id": "requirement-repository",
+        "title": "Публичный репозиторий",
+        "description": "Создать публичный репозиторий с кодом, README.md и интерактивной HTML-презентацией.",
+        "text": "Создать публичный репозиторий с кодом, README.md и интерактивной HTML-презентацией.",
+        "source_ids": [
+          "personal-project-p1"
+        ]
+      },
+      {
+        "id": "requirement-ai",
+        "title": "Интеллектуальная система",
+        "description": "Реализовать собственную MCP-интеграцию, подключённую LLM и пользовательский интерфейс.",
+        "text": "Реализовать собственную MCP-интеграцию, подключённую LLM и пользовательский интерфейс.",
+        "source_ids": [
+          "personal-project-implementation-p1"
+        ]
+      },
+      {
+        "id": "requirement-hosting",
+        "title": "Развёрнутый сервис",
+        "description": "Развернуть работающий сервис на хостинге и предоставить ссылку.",
+        "text": "Развернуть работающий сервис на хостинге и предоставить ссылку.",
+        "source_ids": [
+          "personal-project-implementation-p1"
+        ]
+      },
+      {
+        "id": "requirement-eval",
+        "title": "Проверка качества",
+        "description": "Провести Eval и включить результаты и разбор ошибок в README.",
+        "text": "Провести Eval и включить результаты и разбор ошибок в README.",
+        "source_ids": [
+          "personal-project-implementation-p1"
+        ]
+      },
+      {
+        "id": "requirement-readme",
+        "title": "README.md",
+        "description": "Оформить девять разделов README по структуре задания.",
+        "text": "Оформить девять разделов README по структуре задания.",
+        "source_ids": [
+          "personal-project-readme-p1"
+        ]
+      },
+      {
+        "id": "requirement-presentation",
+        "title": "Защита",
+        "description": "Подготовить интерактивную HTML-презентацию до 10 минут, показать сервис и ответить на вопросы.",
+        "text": "Подготовить интерактивную HTML-презентацию до 10 минут, показать сервис и ответить на вопросы.",
+        "source_ids": [
+          "personal-project-p2"
+        ]
+      },
+      {
+        "id": "requirement-lms",
+        "title": "Материалы LMS",
+        "description": "Отправить две ссылки: на репозиторий с README и HTML-презентацией и на работающий сервис.",
+        "text": "Отправить две ссылки: на репозиторий с README и HTML-презентацией и на работающий сервис.",
+        "source_ids": [
+          "personal-project-p1"
+        ]
+      }
+    ],
+    "criteria": [
+      {
+        "id": "personal-project-task",
+        "title": "Задача и границы",
+        "max_points": 10,
+        "levels": {
+          "0": "Задача не сформулирована или не соответствует критериям.",
+          "5": "Задача сформулирована, определены пользователь и сценарий использования.",
+          "10": "Дополнительно определены границы MVP, сформулированы критерии готовности, задача согласована с преподавателями."
+        },
+        "source_ids": [
+          "personal-project-task-p2"
+        ]
+      },
+      {
+        "id": "personal-project-mcp",
+        "title": "MCP-интеграция",
+        "max_points": 10,
+        "levels": {
+          "0": "MCP отсутствует.",
+          "5": "MCP-сервер реализован, но интеграция частичная или нестабильная.",
+          "10": "MCP-сервер реализован, интеграция работает стабильно, схема MCP описана в README."
+        },
+        "source_ids": [
+          "personal-project-mcp-p2"
+        ]
+      },
+      {
+        "id": "personal-project-hosting",
+        "title": "Сервис и хостинг",
+        "max_points": 10,
+        "levels": {
+          "0": "Сервис не развёрнут, работает только локально.",
+          "5": "Сервис развёрнут, но работает нестабильно или недоступен по ссылке.",
+          "10": "Сервис развёрнут на хостинге, доступен по ссылке, работает стабильно."
+        },
+        "source_ids": [
+          "personal-project-hosting-p2"
+        ]
+      },
+      {
+        "id": "personal-project-eval",
+        "title": "Качество и воспроизводимость",
+        "max_points": 10,
+        "levels": {
+          "0": "Eval отсутствует, README не позволяет воспроизвести проект.",
+          "5": "Eval проведён, README содержит инструкцию по запуску, но есть пробелы.",
+          "10": "Eval проведён, разбор ошибок оформлен, README позволяет полностью воспроизвести проект."
+        },
+        "source_ids": [
+          "personal-project-eval-p2"
+        ]
+      },
+      {
+        "id": "personal-project-demo",
+        "title": "Демо и ответы",
+        "max_points": 10,
+        "levels": {
+          "0": "Демонстрация отсутствует или не работает.",
+          "5": "Демонстрация проведена, но есть проблемы с работоспособностью или ответами на вопросы.",
+          "10": "Демонстрация работает, ответы на вопросы полные и аргументированные."
+        },
+        "source_ids": [
+          "personal-project-demo-p2"
+        ]
+      }
+    ],
+    "facts": [
+      {
+        "key": "lms_links_count",
+        "value": 2,
+        "source_id": "personal-project-p1"
+      },
+      {
+        "key": "max_score",
+        "value": 50,
+        "source_id": "personal-project-p3"
+      },
+      {
+        "key": "mcp_max_score",
+        "value": 10,
+        "source_id": "personal-project-mcp-p2"
+      },
+      {
+        "key": "defense_max_minutes",
+        "value": 10,
+        "source_id": "personal-project-p2"
+      },
+      {
+        "key": "readme_sections_count",
+        "value": 9,
+        "source_id": "personal-project-readme-p1"
+      },
+      {
+        "key": "criteria_count",
+        "value": 5,
+        "source_id": "personal-project-p2"
+      },
+      {
+        "key": "task_max_score",
+        "value": 10,
+        "source_id": "personal-project-task-p2"
+      },
+      {
+        "key": "hosting_max_score",
+        "value": 10,
+        "source_id": "personal-project-hosting-p2"
+      },
+      {
+        "key": "eval_max_score",
+        "value": 10,
+        "source_id": "personal-project-eval-p2"
+      },
+      {
+        "key": "demo_max_score",
+        "value": 10,
+        "source_id": "personal-project-demo-p2"
+      }
+    ],
+    "readme_sections": [
+      "Название проекта и описание задачи.",
+      "Пользователь и сценарий использования.",
+      "Границы MVP.",
+      "Архитектурная схема системы.",
+      "Схема MCP-интеграции.",
+      "Описание AI-логики (модель или агент).",
+      "Инструкция по запуску и развёртыванию.",
+      "Результаты Eval и разбор ошибок.",
+      "Список использованных источников."
+    ]
+  },
+  "sources": [
+    {
+      "source_id": "personal-project-p1",
+      "title": "Личный проект",
+      "page": 1,
+      "section": "Порядок сдачи и формат предоставления материалов",
+      "excerpt": "Загрузить в LMS: Ссылку на публичный репозиторий с интерактивной HTML презентацией и README.md. Ссылку на работающий сервис WEB/TG/MAX/etc-интерфейс. Важно: результатом работы является единый файл README.md в публичном репозитории, а также развёрнутый сервис, доступный по ссылке.",
+      "url": "/sources/personal-project-p1"
+    },
+    {
+      "source_id": "personal-project-readme-p1",
+      "title": "Личный проект",
+      "page": 1,
+      "section": "Примерная структура README",
+      "excerpt": "README должен включать: Название проекта и описание задачи. Пользователь и сценарий использования. Границы MVP. Архитектурная схема системы. Схема MCP-интеграции. Описание AI-логики (модель или агент). Инструкция по запуску и развёртыванию. Результаты Eval и разбор ошибок. Список использованных источников.",
+      "url": "/sources/personal-project-readme-p1"
+    },
+    {
+      "source_id": "personal-project-implementation-p1",
+      "title": "Личный проект",
+      "page": 1,
+      "section": "Что надо сделать",
+      "excerpt": "Создать публичный репозиторий на GitHub, GitVerse, SourceCraft или прочих публичных хранилищах кода. Подготовить README по структуре. Реализовать систему: MCP-интеграция, AI-логика (подключенная LLM), WEB/TG/MAX/etc-интерфейс. Развернуть сервис на хостинге. Провести Eval и оформить разбор ошибок в README. Подготовить интерактивную HTML презентацию для защиты проекта до 10 минут.",
+      "url": "/sources/personal-project-implementation-p1"
+    },
+    {
+      "source_id": "personal-project-p2",
+      "title": "Личный проект",
+      "page": 2,
+      "section": "Формат защиты и критерии оценивания",
+      "excerpt": "Защита проходит в синхронном формате: студент представляет интерактивную HTML презентацию (до 10 минут), демонстрирует работающий сервис и отвечает на вопросы преподавателя и группы. Критерии оценивания (максимум 50 баллов): Задача и границы — 10 баллов. MCP-интеграция — 10 баллов. Сервис и хостинг — 10 баллов. Качество и воспроизводимость — 10 баллов. Демо и ответы — 10 баллов.",
+      "url": "/sources/personal-project-p2"
+    },
+    {
+      "source_id": "personal-project-task-p2",
+      "title": "Личный проект",
+      "page": 2,
+      "section": "Задача и границы",
+      "excerpt": "Задача и границы — 10 баллов. 0 — Задача не сформулирована или не соответствует критериям. 5 — Задача сформулирована, определены пользователь и сценарий использования. 10 — Дополнительно определены границы MVP, сформулированы критерии готовности, задача согласована с преподавателями.",
+      "url": "/sources/personal-project-task-p2"
+    },
+    {
+      "source_id": "personal-project-mcp-p2",
+      "title": "Личный проект",
+      "page": 2,
+      "section": "MCP-интеграция",
+      "excerpt": "MCP-интеграция — 10 баллов. 0 — MCP отсутствует. 5 — MCP-сервер реализован, но интеграция частичная или нестабильная. 10 — MCP-сервер реализован, интеграция работает стабильно, схема MCP описана в README.",
+      "url": "/sources/personal-project-mcp-p2"
+    },
+    {
+      "source_id": "personal-project-hosting-p2",
+      "title": "Личный проект",
+      "page": 2,
+      "section": "Сервис и хостинг",
+      "excerpt": "Сервис и хостинг — 10 баллов. 0 — Сервис не развёрнут, работает только локально. 5 — Сервис развёрнут, но работает нестабильно или недоступен по ссылке. 10 — Сервис развёрнут на хостинге, доступен по ссылке, работает стабильно.",
+      "url": "/sources/personal-project-hosting-p2"
+    },
+    {
+      "source_id": "personal-project-eval-p2",
+      "title": "Личный проект",
+      "page": 2,
+      "section": "Качество и воспроизводимость",
+      "excerpt": "Качество и воспроизводимость — 10 баллов. 0 — Eval отсутствует, README не позволяет воспроизвести проект. 5 — Eval проведён, README содержит инструкцию по запуску, но есть пробелы. 10 — Eval проведён, разбор ошибок оформлен, README позволяет полностью воспроизвести проект.",
+      "url": "/sources/personal-project-eval-p2"
+    },
+    {
+      "source_id": "personal-project-demo-p2",
+      "title": "Личный проект",
+      "page": 2,
+      "section": "Демо и ответы",
+      "excerpt": "Демо и ответы — 10 баллов. 0 — Демонстрация отсутствует или не работает. 5 — Демонстрация проведена, но есть проблемы с работоспособностью или ответами на вопросы. 10 — Демонстрация работает, ответы на вопросы полные и аргументированные.",
+      "url": "/sources/personal-project-demo-p2"
+    },
+    {
+      "source_id": "personal-project-p3",
+      "title": "Личный проект",
+      "page": 3,
+      "section": "Итого",
+      "excerpt": "Итого: максимум 50 баллов.",
+      "url": "/sources/personal-project-p3"
+    }
+  ]
+}
