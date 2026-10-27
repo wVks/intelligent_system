@@ -2,16 +2,19 @@
 
 import asyncio
 import json
+import time
 
 import httpx
 import pytest
 from fastapi.testclient import TestClient
 
 from studynavigator.config import Settings
+from studynavigator.agent import AgentError, StudyAgent
 from studynavigator.live_budget import BudgetTransport
 from studynavigator.main import create_app
 from studynavigator.providers import ChatCompletionsProvider
 from test_ingestion import text_pdf
+from test_agent import FixtureGateway, final_turn
 
 
 def settings(tmp_path, **overrides):
@@ -165,6 +168,99 @@ def test_split_models_keep_one_existing_ledger_and_charge_each_profile(tmp_path)
     reloaded = BudgetTransport(configured.live_budget_path, budget_rub=15)
     assert reloaded.summary() == summary
     asyncio.run(reloaded.close())
+
+
+def repair_gateway():
+    gateway = FixtureGateway()
+    gateway.assignment.update({"is_uploaded": True, "facts": [], "card": {
+        "goal": {"text": "Explain the fixture", "origin": "document",
+                 "source_ids": ["personal-project-p1"]}}})
+    return gateway
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("reject_repair", [False, True])
+async def test_format_repair_uses_same_ledger_and_cannot_dispatch_without_reserve(tmp_path, reject_repair):
+    configured = settings(tmp_path, model="gpt://test-folder/yandexgpt-5.1/latest")
+    paid_payloads = []
+
+    def dispatch(request):
+        payload = json.loads(request.content)
+        if request.url.path.endswith("/tokenizeCompletion"):
+            return httpx.Response(200, json={"tokens": [{"id": "1", "text": "x"}] * 100,
+                                             "modelVersion": "yagpt-5.1-2025-08"})
+        paid_payloads.append(payload)
+        index = len(paid_payloads)
+        turn = ({"role": "assistant", "content": "invalid JSON {"} if index == 1
+                else final_turn(facts=[], source_ids=["personal-project-p1"]))
+        prompt = 950 if reject_repair else 100 * index
+        completion = 10 * index
+        return httpx.Response(200, json={"choices": [{"message": turn, "finish_reason": "stop"}],
+                                        "usage": {"prompt_tokens": prompt, "completion_tokens": completion,
+                                                  "total_tokens": prompt + completion}})
+
+    guard = BudgetTransport(tmp_path / "repair-budget.json", budget_rub=1.8 if reject_repair else 15,
+                            inner=httpx.MockTransport(dispatch), tokenize_payload=True)
+    provider = ChatCompletionsProvider(configured, transport=guard)
+    try:
+        agent = StudyAgent(repair_gateway(), provider)
+        if reject_repair:
+            with pytest.raises(AgentError) as caught:
+                await agent.run("Объясни требования")
+            assert caught.value.code == "eval_budget_exceeded"
+            assert len(paid_payloads) == guard.summary()["attempts"] == 1
+            assert guard.summary()["blocked_reason"] == "insufficient_reservation"
+            assert guard.summary()["actual_cost_rub"] == pytest.approx(0.768)
+        else:
+            result = await agent.run("Объясни требования")
+            assert result["format_repair_attempted"] is True
+            assert result["usage"] == {"prompt_tokens": 300, "completion_tokens": 30, "total_tokens": 330}
+            assert len(paid_payloads) == guard.summary()["attempts"] == 2
+            assert guard.summary()["actual_cost_rub"] == pytest.approx(0.264)
+            assert guard.summary()["unknown_reserved_rub"] == 0
+            assert "tools" not in paid_payloads[1] and "tool_choice" not in paid_payloads[1]
+            assert paid_payloads[1]["max_tokens"] == 250
+            assert paid_payloads[1]["response_format"] == {"type": "json_object"}
+    finally:
+        await guard.close()
+
+
+@pytest.mark.asyncio
+async def test_initial_and_repair_share_one_outer_deadline_and_keep_unknown_reserve(tmp_path):
+    configured = settings(tmp_path, model="gpt://test-folder/yandexgpt-5.1/latest", provider_timeout=1)
+    paid_payloads = []
+
+    async def dispatch(request):
+        payload = json.loads(request.content)
+        if request.url.path.endswith("/tokenizeCompletion"):
+            return httpx.Response(200, json={"tokens": [{"id": "1", "text": "x"}] * 100,
+                                             "modelVersion": "yagpt-5.1-2025-08"})
+        paid_payloads.append(payload)
+        index = len(paid_payloads)
+        # Each call fits 100 ms separately; the pair does not fit one deadline.
+        await asyncio.sleep(0.04 if index == 1 else 0.08)
+        turn = ({"role": "assistant", "content": "invalid JSON {"} if index == 1
+                else final_turn(facts=[], source_ids=["personal-project-p1"]))
+        return httpx.Response(200, json={"choices": [{"message": turn, "finish_reason": "stop"}],
+                                        "usage": {"prompt_tokens": 100, "completion_tokens": 10,
+                                                  "total_tokens": 110}})
+
+    guard = BudgetTransport(tmp_path / "deadline-budget.json", budget_rub=15,
+                            inner=httpx.MockTransport(dispatch), tokenize_payload=True)
+    provider = ChatCompletionsProvider(configured, transport=guard)
+    started = time.monotonic()
+    try:
+        with pytest.raises(AgentError) as caught:
+            await StudyAgent(repair_gateway(), provider, request_timeout=0.1).run("Объясни требования")
+        assert caught.value.code == "request_timeout"
+        assert time.monotonic() - started < 0.5
+        assert len(paid_payloads) == guard.summary()["attempts"] == 2
+        assert guard.summary()["actual_cost_rub"] == pytest.approx(0.088)
+        assert guard.summary()["unknown_reserved_rub"] > 0
+        assert not guard.summary()["blocked"]
+        assert json.loads(guard.ledger_path.read_text())["attempts"][1]["status"] == "unknown"
+    finally:
+        await guard.close()
 
 
 def test_exhausted_budget_returns_controlled_503_for_both_http_routes(tmp_path):

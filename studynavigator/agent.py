@@ -103,9 +103,14 @@ class StudyAgent:
         context_characters = len(message) + sum(len(item["content"]) for item in history_messages)
         usage = None
         format_repair_attempted = False
+        grounded_search_done = False
         context_limit = 16_000
         for _ in range(self.max_calls + 1):
             preload = used_calls == 0 and getattr(self.provider, "preload_assignment", False)
+            grounded = (assignment is not None and assignment.get("is_uploaded") and not expected_facts
+                        and self.provider.mode == "live" and getattr(self.provider, "preload_assignment", False)
+                        and callable(getattr(self.provider, "complete_grounded", None)))
+            preload_search = grounded and not grounded_search_done
             if preload:
                 # The application already knows the selected ID. Fetch it through
                 # real MCP without paying for an LLM turn that merely repeats it.
@@ -114,6 +119,13 @@ class StudyAgent:
                 reply = {"role": "assistant", "content": None, "tool_calls": [{
                     "id": "context-assignment", "type": "function", "function": {
                         "name": "get_assignment", "arguments": json.dumps({"assignment_id": assignment_id})}}]}
+            elif preload_search:
+                reply = {"role": "assistant", "content": None, "tool_calls": [{
+                    "id": "context-search", "type": "function", "function": {
+                        "name": "search_materials", "arguments": json.dumps({
+                            "query": message[:500], "assignment_id": assignment_id, "limit": 5})}}]}
+            elif grounded:
+                reply = await self.provider.complete_grounded(messages)
             else:
                 reply = await self.provider.complete(messages, tools, require_tool=used_calls == 0)
             if not isinstance(reply, dict):
@@ -125,6 +137,8 @@ class StudyAgent:
                     if key in {"prompt_tokens", "completion_tokens", "total_tokens"} and type(value) is int and value >= 0:
                         usage[key] = usage.get(key, 0) + value
             calls = reply.get("tool_calls") or []
+            if grounded and not preload_search and calls:
+                raise AgentError("invalid_model_response", "Модель вернула некорректный итоговый ответ.")
             if not isinstance(calls, list):
                 raise AgentError("invalid_model_response", "Некорректный список инструментов модели.")
             if calls:
@@ -161,8 +175,10 @@ class StudyAgent:
                             raise
                         raise AgentError(getattr(exc, "code", "mcp_error"),
                                          "Не удалось получить данные из MCP-источника.") from exc
-                    if preload and self.gateway.trace:
+                    if (preload or preload_search) and self.gateway.trace:
                         self.gateway.trace[-1]["initiator"] = "application"
+                    if preload_search:
+                        grounded_search_done = True
                     used_calls += 1
                     if not isinstance(result, dict):
                         raise AgentError("invalid_tool_result", "Инструмент вернул некорректные данные.")

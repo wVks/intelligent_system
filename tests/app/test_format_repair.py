@@ -57,7 +57,8 @@ async def test_invalid_uploaded_final_gets_one_tools_free_json_repair_and_combin
     assert result["usage"] == {"prompt_tokens": 300, "completion_tokens": 30, "total_tokens": 330}
     assert len(observed) == 2
     initial, repair = observed
-    assert initial["tools"] and initial["tool_choice"] == "auto" and "response_format" not in initial
+    assert "tools" not in initial and "tool_choice" not in initial
+    assert initial["response_format"] == {"type": "json_object"}
     assert "tools" not in repair and "tool_choice" not in repair
     assert repair["response_format"] == {"type": "json_object"}
     assert repair["max_tokens"] == min(chat_cap, 250)
@@ -65,8 +66,7 @@ async def test_invalid_uploaded_final_gets_one_tools_free_json_repair_and_combin
     assert repair["messages"][0]["content"].startswith(initial["messages"][0]["content"])
     instruction = repair["messages"][0]["content"][len(initial["messages"][0]["content"]):]
     assert len(instruction.split()) <= 40 and "до 40 слов" in instruction
-    assert any(item["role"] == "tool" and json.loads(item["content"])["assignment"]["facts"] == []
-               for item in repair["messages"])
+    assert json.loads(repair["messages"][1]["content"])["MCP_DATA"][0]["assignment"]["facts"] == []
     assert INVALID_CANARY not in json.dumps(repair) and INVALID_CANARY not in caplog.text
 
 
