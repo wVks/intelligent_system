@@ -102,6 +102,7 @@ class StudyAgent:
         used_calls = 0
         context_characters = len(message) + sum(len(item["content"]) for item in history_messages)
         usage = None
+        format_repair_attempted = False
         context_limit = 16_000
         for _ in range(self.max_calls + 1):
             preload = used_calls == 0 and getattr(self.provider, "preload_assignment", False)
@@ -199,22 +200,38 @@ class StudyAgent:
                         raise AgentError("context_limit_exceeded", "Найденные данные превышают лимит контекста.")
                     messages.append({"role": "tool", "tool_call_id": call_id, "content": encoded})
                 continue
-            try:
-                content = unwrap_json_fence(reply.get("content"))
-                answer = FinalAnswer.model_validate_json(content)
-            except (ValueError, TypeError, ValidationError) as exc:
-                if isinstance(exc, ValidationError):
-                    diagnostics = []
-                    for error in exc.errors(include_url=False, include_context=False, include_input=False)[:10]:
-                        root = (error.get("loc") or (None,))[0]
-                        diagnostics.append({
-                            "type": error["type"] if error["type"] in _SAFE_VALIDATION_TYPES else "other",
-                            "field": root if root in _FINAL_FIELDS else "other",
-                        })
-                    logger.warning("model_response_validation errors=%s", json.dumps(diagnostics))
-                else:
-                    logger.warning("model_response_parse error_type=%s", "TypeError" if isinstance(exc, TypeError) else "ValueError")
-                raise AgentError("invalid_model_response", "Не удалось проверить структуру ответа модели.") from exc
+            for parse_attempt in range(2):
+                try:
+                    content = unwrap_json_fence(reply.get("content"))
+                    answer = FinalAnswer.model_validate_json(content)
+                    break
+                except (ValueError, TypeError, ValidationError) as exc:
+                    if isinstance(exc, ValidationError):
+                        diagnostics = []
+                        for error in exc.errors(include_url=False, include_context=False, include_input=False)[:10]:
+                            root = (error.get("loc") or (None,))[0]
+                            diagnostics.append({
+                                "type": error["type"] if error["type"] in _SAFE_VALIDATION_TYPES else "other",
+                                "field": root if root in _FINAL_FIELDS else "other",
+                            })
+                        logger.warning("model_response_validation errors=%s", json.dumps(diagnostics))
+                    else:
+                        logger.warning("model_response_parse error_type=%s", "TypeError" if isinstance(exc, TypeError) else "ValueError")
+                    repair = getattr(self.provider, "repair_final", None)
+                    if (parse_attempt or not isinstance(exc, ValidationError) or assignment is None
+                            or not assignment.get("is_uploaded") or expected_facts or self.provider.mode != "live"
+                            or not getattr(self.provider, "preload_assignment", False) or not callable(repair)):
+                        raise AgentError("invalid_model_response", "Не удалось проверить структуру ответа модели.") from exc
+                    format_repair_attempted = True
+                    logger.warning("model_response_format_repair attempted=true")
+                    reply = await repair(messages)
+                    if not isinstance(reply, dict) or reply.get("tool_calls"):
+                        raise AgentError("invalid_model_response", "Не удалось проверить структуру ответа модели.")
+                    if isinstance(reply.get("_usage"), dict):
+                        usage = usage or {}
+                        for key, value in reply["_usage"].items():
+                            if key in {"prompt_tokens", "completion_tokens", "total_tokens"} and type(value) is int and value >= 0:
+                                usage[key] = usage.get(key, 0) + value
             if answer.status != "out_of_scope" and assignment is None:
                 raise AgentError("assignment_context_required", "Ответ не подтверждён выбранным заданием.")
             if assignment is not None and assignment.get("is_uploaded") and deadline_question(message):
@@ -247,5 +264,6 @@ class StudyAgent:
                     "mode": self.provider.mode,
                     "sources": [sources[s] for s in dict.fromkeys(answer.source_ids)],
                     "facts": [f.model_dump() for f in answer.facts],
-                    "trace": list(self.gateway.trace), "usage": usage or None}
+                    "trace": list(self.gateway.trace), "usage": usage or None,
+                    "format_repair_attempted": format_repair_attempted}
         raise AgentError("tool_limit_exceeded", "Достигнут лимит шагов агента.")
