@@ -5,6 +5,7 @@
 
 **Сервис:** [открыть StudyNavigator](https://studynavigator.136-234-76-207.sslip.io/).
 **Код:** [wVks/intelligent_system](https://github.com/wVks/intelligent_system).
+**Презентация:** [HTML-презентация проекта](presentation/index.html).
 
 MVP развёрнут на VPS и включает загрузку PDF, подтверждение карточки задания,
 расчёт плана и чат с подключёнными языковыми моделями и собственным MCP-сервером.
