@@ -60,7 +60,7 @@
         "local_download_hash_matches": true
       },
       "budget_ledger_unchanged_after_restore_and_reboot": true,
-      "git_push": "not_yet_reported"
+      "git_push": "confirmed_main_3c6256a_to_fee0e3a"
     },
     "image_id": "sha256:78a125ce1d75beb3f7ebd4971e9407ab7f3d9f74af763e1810b63a77b8b0b2ff",
     "restart_policy": "unless-stopped",
@@ -68,7 +68,44 @@
     "health_after_reboot": "healthy",
     "application_sha256": "a46ab4e014244494a9b3c3d251eca4be66fb7f57d243ba0641ea568628def538",
     "local_source_matches_server": true,
-    "runtime_evidence_scope": "Reboot/restore/source-hash evidence was collected before later compact AI fixes. Final target ran code04367f0; final deployment runtime evidence is separate."
+    "runtime_evidence_scope": "Reboot/restore/source-hash evidence was collected before later compact AI fixes. Final target ran code04367f0; final deployment runtime evidence is separate.",
+    "final_update": {
+      "source_commit": "fee0e3a919bd48ce40ae2821f6374f4e21538bbe",
+      "at_utc": "2026-10-27T00:47:38.862504+00:00",
+      "site": "https://studynavigator.136-234-76-207.sslip.io",
+      "status": "deployed_target_chat_verified_browser_acceptance_partial",
+      "image_id": "sha256:086e481c3a7e2e7eed591228459c96c01d7cbf2bd36b25dd10a10aed8a8d8b68",
+      "health": "healthy",
+      "backend_user": "10001:10001",
+      "read_only_root": true,
+      "published_backend_ports": {
+        "8000/tcp": null
+      },
+      "restart_policy": "unless-stopped",
+      "docker_autostart": "enabled",
+      "chat_max_tokens": 1000,
+      "analysis_max_tokens": 2200,
+      "provider_timeout_seconds": 60,
+      "request_timeout_seconds": 90,
+      "budget_rub": "18.7011",
+      "actual_cost_rub": "17.4307",
+      "attempts": 17,
+      "unknown_reserved_rub": "0",
+      "blocked": false,
+      "budget_sha256": "ad680af97e52c9e96b90b89446f13d03ccdac9f27cfc90a90303f5755774e26a",
+      "ledger_unchanged_after_final_update": true,
+      "server_env_permissions": "0o600",
+      "key_absent_from_image_env_history_logs": true,
+      "file_sha256": {
+        "studynavigator/agent.py": "608d640d30d51a6241323237e1c8ad82b285429fcefc58809b18d953b3181d0e",
+        "studynavigator/providers.py": "4ac1220a2fa04b0142daf10ccecfaf37e22b64f66ac3eeb5ca260710795385d6",
+        "studynavigator/live_budget.py": "3e1f12f3d6304cbd60e35e3ad8f1bbf091e4ada72d4ab9a6bf812961a79012c2",
+        "web/app.js": "9bae358771f66a3b716ec69186a1546f5a423991c1d0f20f489aade21a6af2c5",
+        "web/defense.html": "7dd264d8cbbda310648a7b4a0dd221bc46b314066e591f6a13c7a7644aa42a99"
+      },
+      "paid_calls": 0,
+      "final_caps_live_retry_not_performed": true
+    }
   },
   "final_configuration": {
     "mode": "live",
@@ -1374,5 +1411,27 @@
     "var/hosted-new-chat-compact.json": "7f5cb2da06f3a313239c0a37b83e2ff185daafc86574a7f198a3d9de015c444e",
     "var/live-stage6-budget-final.json": "ad680af97e52c9e96b90b89446f13d03ccdac9f27cfc90a90303f5755774e26a"
   },
-  "sanitization": "No API keys, authentication headers, cookie values, real folder IDs, or private uploaded resource IDs are included. Full local reports remain ignored in var/."
+  "sanitization": "No API keys, authentication headers, cookie values, real folder IDs, or private uploaded resource IDs are included. Full local reports remain ignored in var/.",
+  "final_update_verification": {
+    "source_commit": "fee0e3a919bd48ce40ae2821f6374f4e21538bbe",
+    "critical_backend_and_frontend_hashes_match_local": true,
+    "hosted_free_smoke": {
+      "passed": 27,
+      "total": 27,
+      "live_chat_requests": 0
+    },
+    "persistence": {
+      "fixtures": 4,
+      "matches_before": true,
+      "paid_calls": 0
+    },
+    "ledger_unchanged": true,
+    "artifact_sha256": {
+      "var/stage6-runtime-final-compact.json": "185c67047485069a8440916d0f29d83ebfb55ed7692d0027444c6fb985550857",
+      "var/hosted-stage6-release-final.json": "9d7560dcb4b4a6e8516c9e3787e0ed1105133797bc7870f019baf59fa44c9d07",
+      "var/stage6-persistence-final-update.json": "85fe19cc7e29cf183b5897506f2771ccb149604b209d5c9df326ce933b8fd133",
+      "var/eval-stage6-offline-final.json": "527248640cf50b96634de50ddbe0410cf64527c7e423441583ec371663067abc"
+    },
+    "note": "Final artifact commit only updates documentation; no additional paid model or reboot/restore test."
+  }
 }
