@@ -3,11 +3,11 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="theme-color" content="#172d35">
+    <meta name="theme-color" content="#001f1e">
     <title>StudyNavigator — учебное пространство</title>
     <meta name="description" content="Требования учебного задания, ответы с источниками и понятный план подготовки.">
-    <link rel="stylesheet" href="/static/styles.css">
-    <script src="/static/app.js" defer></script>
+    <link rel="stylesheet" href="/static/styles.css?v=20261027-ui2">
+    <script src="/static/app.js?v=20261027-ui2" defer></script>
   </head>
   <body>
     <a class="skip-link" href="#workspace">Перейти к рабочему пространству</a>
@@ -17,43 +17,44 @@
           <span class="brand-mark" aria-hidden="true">
             <svg viewBox="0 0 32 32" fill="none"><path d="m7 10 9-5 9 5v12l-9 5-9-5V10Z" stroke="currentColor" stroke-width="1.7"/><path d="m7 10 9 5 9-5M16 15v12M11.5 7.5l9 5" stroke="currentColor" stroke-width="1.7"/></svg>
           </span>
-          <span>Study<span class="brand-light">Navigator</span><small>Твоя работа. Понятный маршрут.</small></span>
+          <span>Study<span class="brand-light">Navigator</span><small>От материалов к ясному плану</small></span>
         </a>
 
-        <div class="sidebar-heading"><span>Рабочее пространство</span></div>
-        <nav class="workspace-nav" aria-label="Разделы">
-          <a class="nav-link is-active" href="#workspace"><span class="nav-icon" aria-hidden="true">↗</span>Разобраться в задании</a>
-          <a class="nav-link" href="#planning"><span class="nav-icon" aria-hidden="true">≡</span>План подготовки</a>
-        </nav>
-
         <div class="sidebar-heading assignments-heading"><span>Мои задания</span><span id="assignment-count" class="count-badge">—</span></div>
-        <a class="add-assignment-link" href="#upload-panel"><span aria-hidden="true">+</span> Добавить задание</a>
+        <a class="add-assignment-link" href="#upload-panel"><span aria-hidden="true">+</span> Новое задание</a>
         <ul id="assignments" class="assignment-list" aria-label="Выбрать задание">
           <li class="sidebar-placeholder">Загружаем задания…</li>
         </ul>
 
         <div class="sidebar-note">
           <span class="note-symbol" aria-hidden="true">↗</span>
-          <strong>Проверь первоисточник</strong>
-          <p>У ответа есть опора: документ, страница и выдержка.</p>
+          <strong>Понимать, а не угадывать</strong>
+          <p>Требования, ответы и следующий шаг — с опорой на твои материалы.</p>
         </div>
         <div class="sidebar-footer"><span class="small-dot" aria-hidden="true"></span>Учебный ассистент</div>
       </aside>
 
       <main id="workspace" class="workspace" tabindex="-1">
         <header class="topbar">
-          <p class="breadcrumb">Учебное пространство <span>/</span> Задания</p>
-          <div id="mode-badge" class="mode-badge"><span class="small-dot" aria-hidden="true"></span><span id="mode-label">Проверяем подключение</span></div>
+          <p class="breadcrumb">Твоё учебное пространство <span aria-hidden="true">/</span> <strong>Работа с заданием</strong></p>
+          <div id="mode-badge" class="mode-badge" hidden><span id="mode-label">Проверяем подключение</span></div>
         </header>
 
         <section class="page-intro" aria-labelledby="assignment-title">
           <div>
-            <p class="eyebrow">От требований — к готовой работе</p>
+            <p class="eyebrow">Понимание. Подготовка. Результат.</p>
             <h1 id="assignment-title">Разберёмся с заданием</h1>
             <p id="assignment-description" class="intro-description">Найди требования, проверь критерии и выбери следующий шаг.</p>
           </div>
           <div id="assignment-deadline" class="deadline-label">Срок — из материалов задания</div>
         </section>
+
+        <nav id="workflow-nav" class="workflow-nav" aria-label="Этапы работы с заданием">
+          <button class="workflow-button" type="button" data-workflow="upload" aria-controls="upload-panel"><span class="workflow-index" aria-hidden="true">01</span><span>Материалы</span></button>
+          <button class="workflow-button" type="button" data-workflow="card" aria-controls="card-panel"><span class="workflow-index" aria-hidden="true">02</span><span>Задание</span></button>
+          <button class="workflow-button" type="button" data-workflow="planning" aria-controls="planning"><span class="workflow-index" aria-hidden="true">03</span><span>План</span></button>
+          <button class="workflow-button" type="button" data-workflow="chat" aria-controls="chat-panel"><span class="workflow-index" aria-hidden="true">04</span><span>Ассистент</span></button>
+        </nav>
 
         <div id="mode-notice" class="mode-notice" role="status">Подключаемся к сервису и загружаем материалы…</div>
         <div id="initial-error" class="initial-error" role="alert" hidden>
@@ -63,9 +64,10 @@
 
         <section id="upload-panel" class="upload-panel panel" aria-labelledby="upload-title">
           <div class="panel-heading upload-heading">
-            <div><p class="eyebrow">Начать со своих материалов</p><h2 id="upload-title">Добавить задание</h2></div>
-            <span class="context-tag">Текстовый PDF</span>
+            <div><p class="eyebrow">01 / Начни с исходников</p><h2 id="upload-title">Материалы задания</h2></div>
+            <div class="upload-heading-actions"><span class="context-tag">1–3 PDF</span><button id="upload-toggle" class="text-button" type="button" aria-controls="upload-body" aria-expanded="true">Свернуть <span aria-hidden="true">−</span></button></div>
           </div>
+          <div id="upload-body" class="upload-body">
           <form id="upload-form" class="upload-form">
             <div class="upload-fields">
               <label class="upload-name" for="upload-name">Название задания <span>необязательно</span>
@@ -86,17 +88,20 @@
             </div>
             <p id="upload-error" class="upload-error" role="alert" hidden></p>
           </form>
+          </div>
         </section>
 
         <section id="card-panel" class="card-panel panel" aria-labelledby="card-heading" hidden>
           <div class="panel-heading card-heading">
-            <div><p class="eyebrow">Проверить понимание задания</p><h2 id="card-heading">Карточка задания</h2></div>
-            <span id="card-state" class="context-tag">Нужна карточка</span>
+            <div><p class="eyebrow">02 / Выдели главное</p><h2 id="card-heading">Разобраться в задании</h2></div>
+            <div class="card-heading-actions"><span id="card-state" class="context-tag">Нужна карточка</span><button id="card-toggle" class="text-button" type="button" aria-controls="card-body" aria-expanded="false" hidden>Изменить карточку</button></div>
           </div>
-          <div class="card-body">
+          <p id="card-summary" class="card-summary" hidden></p>
+          <div id="card-body" class="card-body">
             <p id="card-notice" class="card-notice">Сначала определим цель, результат и требования. Затем можно составить план.</p>
             <div class="card-actions">
               <button id="analyze-button" class="button button-secondary" type="button">Заполнить карточку</button>
+              <button id="manual-card-button" class="text-button" type="button">Заполнить вручную</button>
               <button id="analyze-cancel" class="text-button" type="button" hidden>Отменить разбор</button>
               <button id="card-reload" class="text-button" type="button" hidden>Обновить карточку</button>
             </div>
@@ -160,17 +165,16 @@
 
           <section id="chat-panel" class="chat-panel panel" aria-labelledby="chat-title">
             <div class="panel-heading chat-heading">
-              <div><p class="eyebrow">Спросить по материалам</p><h2 id="chat-title">Ассистент по заданию</h2></div>
+              <div><p class="eyebrow">04 / Уточни детали</p><h2 id="chat-title">Ассистент по заданию</h2></div>
               <span class="context-tag">С источниками</span>
             </div>
 
             <div id="conversation" class="conversation" role="log" aria-live="polite" aria-relevant="additions text" aria-label="Диалог по заданию">
               <div id="chat-welcome" class="chat-welcome">
                 <span class="welcome-mark" aria-hidden="true">✦</span>
-                <h3>С чего начнём?</h3>
-                <p>Задай вопрос о требованиях, формате сдачи или критериях оценки. Подтверждения будут рядом с ответом.</p>
-                <span class="welcome-rule"></span>
-                <small>Если в материалах нет ответа, ассистент скажет об этом.</small>
+                <div class="welcome-copy"><h3>О чём нужно разобраться?</h3>
+                <p>Требования, критерии или формат сдачи — спроси по своим материалам.</p>
+                <small>Источники появятся рядом с ответом.</small></div>
               </div>
             </div>
 
@@ -192,7 +196,7 @@
 
           <aside id="context-column" class="context-column" aria-label="Материалы и подготовка">
             <section id="sources-panel" class="sources-panel panel" aria-labelledby="sources-title">
-              <div class="panel-heading"><div><p class="eyebrow">Опора для ответа</p><h2 id="sources-title">Материалы задания</h2></div><span id="source-count" class="light-count">—</span></div>
+              <div class="panel-heading"><div><p class="eyebrow">Проверь по оригиналу</p><h2 id="sources-title">Источники</h2></div><span id="source-count" class="light-count">—</span></div>
               <div id="sources" class="sources-list"><p class="empty-note">После выбора задания здесь появятся его источники.</p></div>
               <details id="assignment-details" class="assignment-details" hidden>
                 <summary>Требования и критерии</summary>
@@ -201,7 +205,7 @@
             </section>
 
             <section id="planning" class="planning-panel panel" aria-labelledby="plan-title">
-              <div class="panel-heading"><div><p class="eyebrow">Следующий шаг</p><h2 id="plan-title">План подготовки</h2></div><span class="plan-icon" aria-hidden="true">↗</span></div>
+              <div class="panel-heading"><div><p class="eyebrow">03 / Распредели работу</p><h2 id="plan-title">План подготовки</h2></div><span class="plan-icon" aria-hidden="true">↗</span></div>
               <p id="plan-intro" class="plan-intro">Распределим этапы по доступному времени. Длительности — ориентировочные оценки.</p>
               <form id="plan-form" class="plan-form">
                 <div id="plan-tasks-editor" class="plan-tasks-editor" hidden>

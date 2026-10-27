@@ -309,6 +309,41 @@ def test_exhausted_budget_returns_controlled_503_for_both_http_routes(tmp_path):
         assert app.state.live_budget.summary()["attempts"] == 0
 
 
+def test_manual_confirmation_plan_and_material_search_work_after_budget_error_without_llm(tmp_path):
+    configured = settings(tmp_path, live_budget_rub=0.001)
+    dispatched = []
+    provider = ChatCompletionsProvider(configured, transport=httpx.MockTransport(
+        lambda request: dispatched.append(request) or response(request)))
+    app = create_app(configured, provider=provider)
+    with TestClient(app) as client:
+        uploaded = client.post("/api/assignments", files={"files": (
+            "orion.pdf", text_pdf("Build ORION. Submit a report."), "application/pdf")})
+        assignment = uploaded.json()["assignment"]
+        assignment_id = assignment["assignment_id"]
+        assert assignment["card"] is None and assignment["card_revision"] == 0
+        failed = client.post(f"/api/assignments/{assignment_id}/analyze", json={})
+        assert failed.status_code == 503 and failed.json()["error"]["code"] == "eval_budget_exceeded"
+        assert app.state.live_budget.summary()["blocked"]
+        # A local blank form can be confirmed directly; no successful /analyze is required.
+        card = {"title": assignment["title"], "goal": {"text": "Build ORION", "origin": "user", "source_ids": []},
+                "deliverable": {"text": "Submit a report", "origin": "user", "source_ids": []},
+                "requirements": [], "criteria": [], "deadline": {"date": None, "origin": "unknown", "source_ids": []},
+                "tasks": [], "questions": []}
+        confirmed = client.post(f"/api/assignments/{assignment_id}/confirm", json={"card": card, "revision": 0})
+        assert confirmed.status_code == 200
+        ready = confirmed.json()["assignment"]
+        assert ready["status"] == "ready" and ready["card_revision"] == 1
+        assert ready["card"]["goal"]["origin"] == "user" and ready["card"]["goal"]["source_ids"] == []
+        assert ready["card"]["deadline"] == {"date": None, "origin": "unknown", "source_ids": []}
+        assert ready["card"]["tasks"] and all(task["estimate_source"] == "estimate" for task in ready["card"]["tasks"])
+        planned = client.post("/api/plan", json={"assignment_id": assignment_id, "card_revision": 1,
+                                                 "days": 1, "minutes_per_day": 120})
+        assert planned.status_code == 200
+        materials = client.get(f"/api/assignments/{assignment_id}/materials", params={"q": "ORION"})
+        assert materials.status_code == 200 and materials.json()["matches"]
+        assert not dispatched and app.state.live_budget.summary()["attempts"] == 0
+
+
 def test_default_disabled_guard_preserves_existing_provider_transport(tmp_path):
     configured = settings(tmp_path)
     inner = httpx.MockTransport(response)

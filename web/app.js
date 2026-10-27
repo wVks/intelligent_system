@@ -1,8 +1,9 @@
 "use strict";
 
 const $ = (id) => document.getElementById(id);
-const state = { assignments: [], selectedId: null, detail: null, status: null, selection: 0, chat: null, plan: null, upload: null, search: null, analysis: null, confirmation: null, cardDraft: null, cardDirty: false, planTasks: [], planVersion: 0, deleting: false, loading: false, history: [] };
+const state = { assignments: [], selectedId: null, detail: null, status: null, selection: 0, chat: null, plan: null, upload: null, search: null, analysis: null, confirmation: null, cardDraft: null, cardDirty: false, cardExpanded: true, planTasks: [], planVersion: 0, deleting: false, loading: false, history: [], workflow: "upload" };
 let planKeyboardActivation = false;
+let conversationAtBottom = true;
 
 class ApiError extends Error {
   constructor(message, code = "request_failed", requestId = null, status = null) {
@@ -21,11 +22,88 @@ function element(tag, className, text) {
   return node;
 }
 
+function scrollBehavior() { return window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth"; }
+
 function focusSection(id) {
   const target = $(id);
+  const step = { "upload-title": "upload", "materials-title": "upload", "card-heading": "card", "plan-title": "planning", "chat-title": "chat" }[id];
+  if (step) { state.workflow = step; updateWorkflow(); }
   target.setAttribute("tabindex", "-1");
   target.focus({ preventScroll: true });
-  target.scrollIntoView({ behavior: "smooth", block: "start" });
+  target.scrollIntoView({ behavior: scrollBehavior(), block: "start" });
+}
+
+function setUploadExpanded(expanded) {
+  $("upload-body").hidden = !expanded;
+  $("upload-toggle").setAttribute("aria-expanded", String(expanded));
+  $("upload-toggle").textContent = expanded ? "Свернуть" : "Добавить PDF";
+}
+
+function collapseUploadIfIdle() {
+  if (!state.upload && !$("upload-files").files.length && !$("upload-name").value.trim()) setUploadExpanded(false);
+}
+
+function updateCardVisibility() {
+  const collapsible = isUploaded() && state.detail?.status === "ready" && Boolean(state.cardDraft) && !state.cardDirty && !state.analysis && !state.confirmation;
+  const expanded = !collapsible || state.cardExpanded;
+  $("card-body").hidden = !expanded;
+  $("card-toggle").hidden = !collapsible;
+  $("card-toggle").setAttribute("aria-expanded", String(expanded));
+  $("card-toggle").textContent = expanded ? "Свернуть карточку" : "Изменить карточку";
+  $("card-summary").hidden = !collapsible || expanded;
+  $("card-summary").textContent = `Результат: ${String(state.cardDraft?.deliverable?.text || "карточка подтверждена").slice(0, 180)}`;
+}
+
+function collapseCardIfReady() {
+  if (state.detail?.status === "ready" && !state.cardDirty && !state.analysis && !state.confirmation) state.cardExpanded = false;
+  updateCardVisibility();
+}
+
+function workflowAvailability() {
+  const loaded = Boolean(state.detail) && !state.loading;
+  const ready = loaded && !materialOnly() && !state.cardDirty && !state.analysis && !state.confirmation;
+  return { upload: true, card: loaded && isUploaded(), planning: ready, chat: ready };
+}
+
+function updateWorkflow() {
+  const available = workflowAvailability();
+  if (!available[state.workflow]) state.workflow = available.card ? "card" : available.chat ? "chat" : "upload";
+  document.querySelectorAll("#workflow-nav [data-workflow]").forEach((button) => {
+    const step = button.dataset.workflow;
+    if (step === "upload") button.setAttribute("aria-controls", isUploaded() && state.detail && !state.loading ? "materials-panel" : "upload-panel");
+    button.disabled = !available[step];
+    const current = state.workflow === step;
+    button.classList.toggle("is-current", current);
+    if (current) button.setAttribute("aria-current", "step");
+    else button.removeAttribute("aria-current");
+  });
+}
+
+function navigateWorkflow(step) {
+  if (!workflowAvailability()[step]) return;
+  if (step === "upload") {
+    if (isUploaded() && state.detail && !state.loading) {
+      $("materials-body").hidden = false;
+      $("materials-toggle").setAttribute("aria-expanded", "true");
+      $("materials-toggle").textContent = "Скрыть материалы";
+      focusSection("materials-title");
+    } else { setUploadExpanded(true); focusSection("upload-title"); }
+  } else {
+    collapseUploadIfIdle();
+    if (step === "card") { state.cardExpanded = true; updateCardVisibility(); }
+    else collapseCardIfReady();
+    focusSection({ card: "card-heading", planning: "plan-title", chat: "chat-title" }[step]);
+  }
+}
+
+function userErrorMessage(error) {
+  const messages = {
+    eval_budget_exceeded: "Достигнут тестовый лимит AI-запросов приложения. Владельцу сервиса нужно проверить лимит расходов AI. Материалы и план остаются доступны; карточку своих файлов можно заполнить вручную.",
+    eval_budget_invalid: "AI временно недоступен: владельцу сервиса нужно проверить настройки лимита. Можно продолжить с ручной карточкой.",
+    provider_auth: "Нет доступа к модели. Владельцу сервиса нужно проверить подключение. Можно продолжить с ручной карточкой.",
+    provider_rate_limit: "Сервис модели временно ограничил запросы. Попробуйте позже или заполните карточку вручную.",
+  };
+  return messages[error.code] || error.message;
 }
 
 async function requestJSON(path, options = {}, timeout = 50000) {
@@ -87,7 +165,8 @@ function showMode(status, assignment = state.detail) {
   const offline = status.mode === "offline";
   const unconfigured = status.mode === "live" && !status.live_configured;
   $("mode-badge").className = `mode-badge${offline ? " is-offline" : unconfigured ? " is-error" : ""}`;
-  $("mode-label").textContent = offline ? "Демо · без LLM" : unconfigured ? "Модель не настроена" : "Живая модель";
+  $("mode-badge").hidden = true;
+  $("mode-label").textContent = offline ? "Демо · без LLM" : unconfigured ? "Модель не настроена" : "AI подключён";
   $("mode-notice").className = `mode-notice${offline ? "" : unconfigured ? " is-error" : " is-live"}`;
   $("mode-notice").textContent = offline
     ? isUploaded(assignment)
@@ -95,7 +174,7 @@ function showMode(status, assignment = state.detail) {
       : "Демонстрационный режим: ответы по материалам формируются детерминированно. LLM не подключена."
     : unconfigured
       ? "Выбран режим живой модели, но доступ к ней не настроен. Запросы не будут подменены демонстрационными ответами."
-      : `Ответы формирует подключённая языковая модель${status.model ? ` (${status.model})` : ""}. Проверяйте важные факты по источникам.`;
+      : `${String(status.model || "").includes("/yandexgpt-5.1/") ? "Ассистент работает на YandexGPT 5.1." : "AI-ассистент подключён."} Проверяйте важные факты по источникам.`;
 }
 
 function materialOnly(assignment = state.detail) {
@@ -139,6 +218,8 @@ function updateControls() {
   $("analyze-button").textContent = state.analysis ? "Получаем карточку…" : state.status?.mode === "live" ? state.cardDraft ? "Повторить AI-разбор" : "Разобрать материалы" : "Заполнить карточку";
   $("analyze-button").hidden = state.status?.mode !== "live" && Boolean(state.cardDraft);
   $("analyze-cancel").hidden = !state.analysis;
+  $("manual-card-button").hidden = !isUploaded() || Boolean(state.cardDraft);
+  $("manual-card-button").disabled = !state.detail || state.loading || cardBusy;
   $("card-confirm").disabled = !state.cardDraft || state.loading || cardBusy || (state.detail?.status === "ready" && !state.cardDirty);
   $("card-confirm").textContent = state.confirmation ? "Сохраняем карточку…" : state.detail?.status === "ready" ? state.cardDirty ? "Подтвердить изменения и пересчитать план" : "Карточка подтверждена" : "Подтвердить карточку и перейти к плану";
   $("card-form").setAttribute("aria-busy", String(cardBusy));
@@ -150,6 +231,8 @@ function updateControls() {
   for (const [cancelId, nextId] of [["cancel-button", "question"], ["upload-cancel", "upload-button"], ["analyze-cancel", "analyze-button"]]) {
     if (focused === $(cancelId) && $(cancelId).hidden && !$(nextId).hidden && !$(nextId).disabled) $(nextId).focus();
   }
+  updateCardVisibility();
+  updateWorkflow();
 }
 
 function renderAssignments() {
@@ -280,6 +363,7 @@ function resetConversation() {
   state.chat?.abort();
   state.chat = null;
   state.history = [];
+  conversationAtBottom = true;
   $("conversation").querySelectorAll(".message").forEach((node) => node.remove());
   $("chat-welcome").hidden = false;
 }
@@ -319,9 +403,10 @@ function renderCardEvidence(card) {
   target.hidden = !count;
 }
 
-function renderCard(assignment) {
+function renderCard(assignment, expanded = assignment.status !== "ready") {
   state.cardDraft = assignment.card ? cloneData(assignment.card) : null;
   state.cardDirty = false;
+  state.cardExpanded = expanded;
   $("card-form").hidden = !state.cardDraft;
   $("card-error").hidden = true;
   $("card-reload").hidden = true;
@@ -410,7 +495,9 @@ function applyAssignment(assignment) {
 }
 
 function cardError(error) {
-  $("card-error").textContent = error.message;
+  state.cardExpanded = true;
+  $("card-status").textContent = "";
+  $("card-error").textContent = userErrorMessage(error);
   $("card-error").hidden = false;
   if (error.status === 409) {
     $("card-reload").hidden = false;
@@ -418,13 +505,30 @@ function cardError(error) {
   }
 }
 
+function openManualCard() {
+  if (!isUploaded() || !state.detail || state.loading || state.analysis || state.confirmation) return;
+  if (!state.cardDraft) {
+    const field = () => ({ text: "", origin: "user", source_ids: [] });
+    const card = { title: state.detail.title, goal: field(), deliverable: field(), requirements: [], criteria: [], deadline: { date: null, origin: "unknown", source_ids: [] }, tasks: [], questions: [] };
+    renderCard({ ...state.detail, card });
+    $("card-notice").textContent = "Заполните карточку по своим материалам. Модель не вызывается; введённые сведения сохранятся как ваш ввод. Неизвестную дату оставьте пустой.";
+  }
+  $("card-status").textContent = "Ручное заполнение. После подтверждения станут доступны план и чат.";
+  updateControls();
+  collapseUploadIfIdle();
+  focusSection("card-heading");
+  $("card-goal").focus({ preventScroll: true });
+}
+
 async function analyzeCard() {
   if (!isUploaded() || state.loading || state.analysis || state.confirmation || state.cardDirty) return;
+  if (state.status?.mode !== "live") { openManualCard(); return; }
   const controller = new AbortController();
   const selection = ++state.selection;
   resetConversation();
   invalidatePlan();
   state.analysis = controller;
+  state.cardExpanded = true;
   $("card-error").hidden = true;
   $("card-status").textContent = state.status?.mode === "live" ? "Разбираем материалы и проверяем структуру карточки…" : "Готовим пустую карточку для ручного заполнения. Модель не вызывается.";
   updateControls();
@@ -462,14 +566,19 @@ async function confirmCard(event) {
   $("card-status").textContent = "Проверяем и сохраняем карточку…";
   updateControls();
   try {
-    const data = await requestJSON(`/api/assignments/${encodeURIComponent(state.selectedId)}/confirm`, { method: "POST", body: JSON.stringify({ card, revision: state.detail.card_revision }), signal: controller.signal }, 15000);
+    const data = await requestJSON(`/api/assignments/${encodeURIComponent(state.selectedId)}/confirm`, { method: "POST", body: JSON.stringify({ card, revision: state.detail.card_revision ?? 0 }), signal: controller.signal }, 15000);
     if (selection !== state.selection) return;
     if (!data.assignment?.card || data.assignment.status !== "ready") throw new ApiError("Не удалось подтвердить состояние карточки.", "invalid_response");
     applyAssignment(data.assignment);
     $("card-status").textContent = "Карточка подтверждена. Проверьте оценки задач и рассчитайте план ниже.";
+    state.confirmation = null;
+    updateControls();
     focusSection("plan-title");
   } catch (error) {
-    if (selection === state.selection && error.code !== "cancelled") cardError(error);
+    if (selection === state.selection) {
+      if (error.code === "cancelled") $("card-status").textContent = "Сохранение отменено. Правки остаются в форме.";
+      else cardError(error);
+    }
   } finally {
     if (state.confirmation === controller) { state.confirmation = null; updateControls(); }
   }
@@ -529,6 +638,8 @@ function renderTaskEditor() {
 function showAssignmentMode(assignment) {
   const uploaded = isUploaded(assignment);
   const pending = materialOnly(assignment);
+  state.workflow = uploaded ? pending ? "card" : "planning" : "chat";
+  if (uploaded) collapseUploadIfIdle();
   $("materials-panel").hidden = !uploaded;
   $("card-panel").hidden = !uploaded;
   $("chat-panel").hidden = pending;
@@ -613,7 +724,7 @@ async function submitUpload(event) {
     $("upload-status").textContent = opened
       ? "Готово: материалы сохранены. Следующий шаг — проверить и подтвердить карточку задания."
       : "Материалы сохранены. Выберите новое задание в списке после завершения текущих правок или повторите его открытие.";
-    if (opened) focusSection("card-heading");
+    if (opened) { setUploadExpanded(false); focusSection("card-heading"); }
   } catch (error) {
     if (error.code === "cancelled") {
       $("upload-status").textContent = "Загрузка отменена. Если задание успело сохраниться, оно появится в списке.";
@@ -696,6 +807,7 @@ async function selectAssignment(id, force = false) {
   const selection = ++state.selection;
   state.selectedId = id;
   state.history = [];
+  conversationAtBottom = true;
   state.detail = null;
   state.loading = true;
   $("conversation").querySelectorAll(".message").forEach((node) => node.remove());
@@ -734,6 +846,7 @@ async function selectAssignment(id, force = false) {
     const data = await requestJSON(`/api/assignments/${encodeURIComponent(id)}`, {}, 15000);
     if (selection !== state.selection) return false;
     if (!data.assignment || typeof data.assignment.title !== "string") throw new ApiError("Не удалось прочитать задание.", "invalid_response");
+    state.loading = false;
     applyAssignment(data.assignment);
     return true;
   } catch (error) {
@@ -768,7 +881,9 @@ function messageNode(role, text = "", pending = false) {
   return node;
 }
 
-function scrollConversation() { $("conversation").scrollTop = $("conversation").scrollHeight; }
+function scrollConversation() {
+  if (conversationAtBottom) $("conversation").scrollTop = $("conversation").scrollHeight;
+}
 
 function fillAnswer(node, data) {
   node.classList.remove("is-pending");
@@ -835,7 +950,7 @@ async function sendMessage(value) {
     if (selection !== state.selection) return;
     pending.classList.remove("is-pending");
     pending.classList.add("is-error");
-    pending.querySelector(".message-content").textContent = error.message;
+    pending.querySelector(".message-content").textContent = userErrorMessage(error);
     if (error.requestId) pending.append(element("div", "response-meta", `Запрос ${error.requestId}`));
     const retry = element("button", "retry-button", error.code === "cancelled" ? "Задать вопрос снова" : "Повторить запрос");
     retry.type = "button";
@@ -925,7 +1040,7 @@ async function submitPlan(event) {
       if (keyboardActivation && !focusMoved && !controller.signal.aborted && selection === state.selection
           && version === state.planVersion && focusTarget && document.hasFocus()) {
         focusTarget.focus({ preventScroll: true });
-        focusTarget.scrollIntoView({ behavior: "smooth", block: "nearest" });
+        focusTarget.scrollIntoView({ behavior: scrollBehavior(), block: "nearest" });
       }
     }
   }
@@ -949,6 +1064,7 @@ async function initialize() {
     $("initial-error-text").textContent = error.message;
     $("initial-error").hidden = false;
     $("mode-badge").className = "mode-badge is-error";
+    $("mode-badge").hidden = true;
     $("mode-label").textContent = "Нет связи с сервисом";
     $("mode-notice").className = "mode-notice is-error";
     $("mode-notice").textContent = "Не удалось загрузить состояние сервиса. Сведения о подключении модели пока недоступны.";
@@ -966,6 +1082,7 @@ $("upload-form").addEventListener("submit", submitUpload);
 $("upload-files").addEventListener("change", selectedFilesChanged);
 $("upload-reset").addEventListener("click", () => { $("upload-files").value = ""; selectedFilesChanged(); });
 $("upload-cancel").addEventListener("click", () => state.upload?.abort());
+$("upload-toggle").addEventListener("click", () => { setUploadExpanded($("upload-body").hidden); });
 $("material-search-form").addEventListener("submit", searchMaterials);
 $("materials-toggle").addEventListener("click", () => {
   const expanded = $("materials-body").hidden;
@@ -974,6 +1091,7 @@ $("materials-toggle").addEventListener("click", () => {
   $("materials-toggle").textContent = expanded ? "Скрыть материалы" : "Показать материалы";
 });
 $("analyze-button").addEventListener("click", analyzeCard);
+$("manual-card-button").addEventListener("click", openManualCard);
 $("analyze-cancel").addEventListener("click", () => state.analysis?.abort());
 $("card-form").addEventListener("submit", confirmCard);
 $("card-form").addEventListener("input", () => {
@@ -982,10 +1100,15 @@ $("card-form").addEventListener("input", () => {
   invalidatePlan();
   updateControls();
 });
+$("card-toggle").addEventListener("click", () => {
+  if (state.cardDirty || state.analysis || state.confirmation || state.detail?.status !== "ready") return;
+  state.cardExpanded = !state.cardExpanded;
+  updateCardVisibility();
+});
 $("card-reload").addEventListener("click", () => { if (state.selectedId) selectAssignment(state.selectedId, true); });
 $("card-discard").addEventListener("click", () => {
   if (!state.detail) return;
-  renderCard(state.detail);
+  renderCard(state.detail, true);
   $("card-status").textContent = "Правки отменены. Показана последняя сохранённая карточка.";
   updateControls();
   $("card-goal").focus();
@@ -993,5 +1116,27 @@ $("card-discard").addEventListener("click", () => {
 $("delete-assignment").addEventListener("click", () => { $("delete-confirmation").hidden = false; $("delete-confirm").focus(); });
 $("delete-cancel").addEventListener("click", () => { $("delete-confirmation").hidden = true; $("delete-assignment").focus(); });
 $("delete-confirm").addEventListener("click", deleteAssignment);
+$("conversation").addEventListener("scroll", () => {
+  const log = $("conversation");
+  conversationAtBottom = log.scrollHeight - log.scrollTop - log.clientHeight <= 80;
+});
+for (const [id, step] of [["upload-panel", "upload"], ["materials-panel", "upload"], ["card-panel", "card"], ["planning", "planning"], ["chat-panel", "chat"]]) {
+  $(id).addEventListener("focusin", () => {
+    if (step === "planning" || step === "chat") collapseCardIfReady();
+    if (workflowAvailability()[step]) { state.workflow = step; updateWorkflow(); }
+  });
+}
+document.querySelectorAll("#workflow-nav [data-workflow]").forEach((button) => {
+  button.addEventListener("click", () => navigateWorkflow(button.dataset.workflow));
+  button.addEventListener("keydown", (event) => {
+    if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) return;
+    const available = Array.from(document.querySelectorAll("#workflow-nav [data-workflow]")).filter((item) => !item.disabled);
+    if (!available.length) return;
+    event.preventDefault();
+    const index = available.indexOf(button);
+    const next = event.key === "Home" ? 0 : event.key === "End" ? available.length - 1 : (index + (event.key === "ArrowRight" ? 1 : -1) + available.length) % available.length;
+    available[next].focus();
+  });
+});
 document.querySelectorAll("[data-prompt]").forEach((button) => button.addEventListener("click", () => { sendMessage(button.dataset.prompt); }));
 initialize();
