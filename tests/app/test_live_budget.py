@@ -28,6 +28,65 @@ def tokenized(count=80, **overrides):
             "modelVersion": "yagpt-5.1-2025-08", **overrides}
 
 
+@pytest.mark.parametrize("budget", [0, -1, 150.01, float("nan"), float("inf"), True])
+def test_guard_rejects_invalid_or_above_150_budget_without_dispatch(tmp_path, budget):
+    with pytest.raises(ProviderError) as caught:
+        BudgetTransport(tmp_path / "invalid.json", budget_rub=budget)
+    assert caught.value.code == "eval_budget_invalid"
+    assert not (tmp_path / "invalid.json").exists()
+
+
+@pytest.mark.asyncio
+async def test_150_requires_explicit_ledger_migration_and_preserves_history_and_unknown_reserve(tmp_path):
+    ledger = tmp_path / "ledger.json"
+    old_attempts = [
+        {"id": 1, "model": "yandexgpt-5.1/latest", "status": "actual", "reserved_rub": "12.0",
+         "prompt_tokens_upper_bound": 14000, "completion_tokens_upper_bound": 1000,
+         "usage": {"prompt_tokens": 12000, "completion_tokens": 500, "total_tokens": 12500},
+         "actual_cost_rub": "10.0"},
+        {"id": 2, "model": "aliceai-llm-flash", "status": "unknown", "reserved_rub": "0.5",
+         "prompt_tokens_upper_bound": 3000, "completion_tokens_upper_bound": 1000,
+         "input_rate_rub_per_1000_tokens": "0.1", "output_rate_rub_per_1000_tokens": "0.2",
+         "reason": "transport_or_read_error"},
+    ]
+    original = {"version": 1, "budget_rub": "18.7011", "rate_rub_per_1000_tokens": "0.8",
+                "attempts": old_attempts, "blocked": True, "blocked_reason": "insufficient_reservation",
+                "last_blocked_request": {"model": "yandexgpt-5.1/latest", "reserved_rub": "20"}}
+    ledger.write_text(json.dumps(original))
+    before = ledger.read_bytes()
+    with pytest.raises(ProviderError) as caught:
+        BudgetTransport(ledger, budget_rub=150)
+    assert caught.value.code == "eval_budget_invalid"
+    assert ledger.read_bytes() == before  # Settings never silently grant or migrate funds.
+
+    extension = {"old_budget_rub": "18.7011", "new_budget_rub": "150", "authorized_total_rub": "150"}
+    migrated = {**original, "budget_rub": "150", "blocked": False, "blocked_reason": None,
+                "budget_extensions": [extension],
+                "reservation_recoveries": [{"previous_reason": original["blocked_reason"],
+                                            "last_blocked_request": original["last_blocked_request"]}]}
+    ledger.write_text(json.dumps(migrated))  # Simulated audited admin migration, never application code.
+    transport = BudgetTransport(ledger, budget_rub=150, inner=httpx.MockTransport(lambda request: success()))
+    assert transport.summary()["actual_cost_rub"] == 10
+    assert transport.summary()["unknown_reserved_rub"] == 0.5
+    assert transport.summary()["remaining_rub"] == 139.5
+    async with httpx.AsyncClient(transport=transport) as client:
+        assert (await client.post(URL, json=payload())).status_code == 200
+    saved = json.loads(ledger.read_text())
+    assert saved["attempts"][:2] == old_attempts
+    assert saved["budget_extensions"] == [extension]
+    assert saved["reservation_recoveries"] == migrated["reservation_recoveries"]
+    assert saved["last_blocked_request"] == original["last_blocked_request"]
+    summary = transport.summary()
+    assert summary["attempts"] == 3
+    assert summary["actual_cost_rub"] == pytest.approx(10.0128)
+    assert summary["unknown_reserved_rub"] == 0.5
+    assert summary["remaining_rub"] == pytest.approx(139.4872)
+    await transport.close()
+    reloaded = BudgetTransport(ledger, budget_rub=150)
+    assert reloaded.summary() == summary
+    await reloaded.close()
+
+
 @pytest.mark.asyncio
 async def test_reservation_is_saved_before_dispatch_then_reconciled(tmp_path):
     ledger = tmp_path / "ledger.json"

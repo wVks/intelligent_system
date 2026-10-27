@@ -27,7 +27,8 @@ from .providers import ProviderError
 TOKEN_RATE_RUB = Decimal("0.0008")
 PRICE_PROFILES = {"yandexgpt-5.1": (TOKEN_RATE_RUB, TOKEN_RATE_RUB),
                   "aliceai-llm-flash": (Decimal("0.0001"), Decimal("0.0002"))}
-MAX_BUDGET_RUB = Decimal("25")
+# Server ceiling only; the CLI diagnostic runner separately enforces 25 RUB.
+MAX_BUDGET_RUB = Decimal("150")
 MODEL = re.compile(r"^gpt://[A-Za-z0-9_-]{1,100}/((?:yandexgpt-5\.1|aliceai-llm-flash)(?:/latest)?)$")
 ALLOWED_PAYLOAD_FIELDS = {
     "model", "messages", "tools", "tool_choice", "max_tokens", "response_format",

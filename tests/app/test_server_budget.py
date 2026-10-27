@@ -56,10 +56,36 @@ def test_budget_config_is_optional_and_reads_only_explicit_environment(monkeypat
     assert configured.live_budget_path == tmp_path / "hosted-budget.json"
 
 
-@pytest.mark.parametrize("budget", [0, -1, 26, float("nan"), float("inf"), True])
+@pytest.mark.parametrize("budget", [0, -1, 150.01, float("nan"), float("inf"), True])
 def test_invalid_server_budget_fails_closed(tmp_path, budget):
     with pytest.raises(ValueError):
         settings(tmp_path, live_budget_rub=budget)
+
+
+def test_explicit_150_server_budget_wires_guard_but_is_not_a_default(tmp_path):
+    assert settings(tmp_path).live_budget_rub is None
+    configured = settings(tmp_path, live_budget_rub=150)
+    provider = ChatCompletionsProvider(configured, transport=httpx.MockTransport(response))
+    app = create_app(configured, provider=provider)
+    assert app.state.live_budget is provider.transport
+    assert app.state.live_budget.summary()["budget_rub"] == 150
+    with TestClient(app) as client:
+        assert client.post("/api/chat", json={"message": "Когда сдавать?",
+                                             "assignment_id": "personal-project"}).status_code == 200
+        assert app.state.live_budget.summary()["actual_cost_rub"] == pytest.approx(0.002)
+
+
+def test_live_eval_cli_still_rejects_above_25_before_loading_credentials(monkeypatch):
+    from tools.run_live_eval import main
+
+    def forbidden_settings(cls):
+        pytest.fail("Rejected CLI budget must not load credentials or reach a provider")
+
+    monkeypatch.setattr(Settings, "from_env", classmethod(forbidden_settings))
+    monkeypatch.setattr("sys.argv", ["run_live_eval.py", "--execute", "--budget-rub", "150"])
+    with pytest.raises(SystemExit) as caught:
+        main()
+    assert caught.value.code == 2
 
 
 def test_chat_and_analysis_routes_share_one_budget_and_close_it(tmp_path):
